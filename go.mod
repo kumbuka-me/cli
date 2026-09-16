@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/containeroo/tinyflags v0.0.86
-	github.com/kumbuka-me/kumbuka v0.0.6
+	github.com/kumbuka-me/kumbuka v0.0.8
 	github.com/kumbuka-me/sdk v0.5.0
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
