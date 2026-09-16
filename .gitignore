@@ -1,0 +1,11 @@
+/bin/*
+!/bin/dev-tools.mk
+
+/kumbuka-cli
+coverage.out
+coverage.html
+.DS_Store
+
+# Local development workspace
+/go.work
+/go.work.sum

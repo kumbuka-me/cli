@@ -1,0 +1,35 @@
+---
+name: Unit Tests
+
+on:
+  workflow_call:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: "go.mod"
+          check-latest: true
+          cache: true
+      - name: Download dependencies
+        run: make download
+      - name: Check formatting
+        run: |
+          test -z "$(gofmt -l .)"
+          git diff --check
+      - name: Run tests
+        run: make test-race

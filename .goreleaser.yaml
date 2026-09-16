@@ -1,0 +1,18 @@
+---
+project_name: kumbuka-cli
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: kumbuka-cli
+    main: ./cmd/kumbuka-cli/
+    binary: kumbuka-cli
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+      - -X main.Version={{ .Tag }}
