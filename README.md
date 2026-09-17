@@ -60,4 +60,4 @@ make test
 
 ## License
 
-Kumbuka CLI is licensed under the [Apache License, Version 2.0](LICENSE).
+Licensed under the [Apache License 2.0](./LICENSE).
