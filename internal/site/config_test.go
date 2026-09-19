@@ -201,7 +201,7 @@ sidebar_width = 360
 		config := defaultConfig()
 		config.NavigationStyle = "columns"
 
-		assert.ErrorContains(t, validateConfigFileValues(config), "navigation_style must be sidebar, topbar, or tree")
+		assert.ErrorContains(t, validateConfigValues(config), "navigation_style must be sidebar, topbar, or tree")
 	})
 
 	t.Run("rejects unknown navigation density", func(t *testing.T) {
@@ -210,7 +210,7 @@ sidebar_width = 360
 		config := defaultConfig()
 		config.NavigationDensity = "dense"
 
-		assert.ErrorContains(t, validateConfigFileValues(config), "navigation_density must be comfortable or compact")
+		assert.ErrorContains(t, validateConfigValues(config), "navigation_density must be comfortable or compact")
 	})
 
 	t.Run("rejects sidebar width below range", func(t *testing.T) {
@@ -219,7 +219,7 @@ sidebar_width = 360
 		config := defaultConfig()
 		config.SidebarWidth = domain.MinSidebarWidth - 1
 
-		assert.ErrorContains(t, validateConfigFileValues(config), "sidebar_width must be between 220 and 420 pixels")
+		assert.ErrorContains(t, validateConfigValues(config), "sidebar_width must be between 220 and 420 pixels")
 	})
 
 	t.Run("rejects sidebar width above range", func(t *testing.T) {
@@ -228,7 +228,7 @@ sidebar_width = 360
 		config := defaultConfig()
 		config.SidebarWidth = domain.MaxSidebarWidth + 1
 
-		assert.ErrorContains(t, validateConfigFileValues(config), "sidebar_width must be between 220 and 420 pixels")
+		assert.ErrorContains(t, validateConfigValues(config), "sidebar_width must be between 220 and 420 pixels")
 	})
 }
 
@@ -254,7 +254,7 @@ func TestRobotsConfiguration(t *testing.T) {
 		config := defaultConfig()
 		config.RobotsPolicy = "sometimes"
 
-		assert.ErrorContains(t, validateConfigFileValues(config), "robots must be allow, disallow, or none")
+		assert.ErrorContains(t, validateConfigValues(config), "robots must be allow, disallow, or none")
 	})
 }
 

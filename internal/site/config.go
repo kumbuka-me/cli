@@ -79,16 +79,17 @@ func loadConfig(filename string, required bool) (Config, error) {
 	}
 
 	config.resolveAssetPaths(filepath.Dir(filename))
-	if err := validateConfigFile(config); err != nil {
+	config = normalizeConfig(config)
+	if err := validateConfig(config); err != nil {
 		return Config{}, err
 	}
 
 	return config, nil
 }
 
-// ValidateConfig validates relationships after command-line overrides have been applied.
+// ValidateConfig validates the complete effective static-site configuration without mutating it.
 func ValidateConfig(config Config) error {
-	return validateResolvedConfig(config)
+	return validateConfig(normalizeConfig(config))
 }
 
 // ValidateSidebarWidth checks the supported static navigation width range.

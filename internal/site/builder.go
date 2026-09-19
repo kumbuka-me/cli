@@ -102,7 +102,8 @@ func newBuilder(appFS fs.FS) *builder {
 
 // build renders all configured Markdown files into staged output and replaces the destination after a complete build.
 func (b *builder) build(ctx context.Context, config Config) (buildResult, error) {
-	if err := validateResolvedConfig(config); err != nil {
+	config = normalizeConfig(config)
+	if err := validateConfig(config); err != nil {
 		return buildResult{}, err
 	}
 
@@ -178,10 +179,6 @@ func (b *builder) buildInto(ctx context.Context, config Config) (buildResult, er
 
 // planBuild validates configuration and prepares immutable state used by rendering.
 func (b *builder) planBuild(config Config) (buildPlan, error) {
-	if err := validateResolvedConfig(config); err != nil {
-		return buildPlan{}, err
-	}
-
 	themeData, err := loadThemeData(config.Theme)
 	if err != nil {
 		return buildPlan{}, err

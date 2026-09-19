@@ -6,15 +6,43 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
 	"github.com/kumbuka-me/kumbuka/pkg/icons"
 )
 
-// validateConfigFile validates values that came from the TOML configuration file.
-func validateConfigFile(config Config) error {
-	if err := validateConfigFileValues(config); err != nil {
+// normalizeConfig returns a build configuration with canonical plugin-independent presentation values.
+func normalizeConfig(config Config) Config {
+	config.ExternalLinks = normalizeExternalLinks(config.ExternalLinks)
+	return config
+}
+
+// normalizeExternalLinks clones and canonicalizes configurable top-bar links.
+func normalizeExternalLinks(links []domain.ExternalLink) []domain.ExternalLink {
+	normalized := slices.Clone(links)
+	for index := range normalized {
+		link := &normalized[index]
+		link.Label = strings.TrimSpace(link.Label)
+		link.URL = strings.TrimSpace(link.URL)
+		link.Icon = strings.TrimSpace(link.Icon)
+		link.Description = strings.TrimSpace(link.Description)
+		link.HoverEffect = strings.TrimSpace(link.HoverEffect)
+		link.HoverText = strings.TrimSpace(link.HoverText)
+		if link.HoverEffect == "" {
+			link.HoverEffect = domain.EffectiveExternalLinkHoverEffect("")
+		}
+	}
+	return normalized
+}
+
+// validateConfig validates every static-site invariant independent of how the configuration was constructed.
+func validateConfig(config Config) error {
+	if err := validateConfigValues(config); err != nil {
+		return err
+	}
+	if err := validateBuildDirectories(config.SourceDir, config.OutputDir); err != nil {
 		return err
 	}
 	if err := validateAssetPaths(config); err != nil {
@@ -26,16 +54,8 @@ func validateConfigFile(config Config) error {
 	return validateExternalLinks(config.ExternalLinks)
 }
 
-// validateResolvedConfig validates relationships after CLI overrides have been applied.
-func validateResolvedConfig(config Config) error {
-	if err := validateBuildDirectories(config.SourceDir, config.OutputDir); err != nil {
-		return err
-	}
-	return validateAssetPaths(config)
-}
-
-// validateConfigFileValues validates TOML values that TinyFlags validates for CLI input.
-func validateConfigFileValues(config Config) error {
+// validateConfigValues validates scalar values shared by file, CLI, and programmatic configuration.
+func validateConfigValues(config Config) error {
 	if config.SiteName == "" {
 		return errors.New("site_name must not be empty")
 	}
@@ -76,17 +96,9 @@ func validateSidebarWidth(width int) error {
 	return nil
 }
 
-// validateExternalLinks normalizes and validates configurable top-bar links.
+// validateExternalLinks validates canonical configurable top-bar links without mutating the caller.
 func validateExternalLinks(links []domain.ExternalLink) error {
-	for index := range links {
-		link := &links[index]
-		link.Label = strings.TrimSpace(link.Label)
-		link.URL = strings.TrimSpace(link.URL)
-		link.Icon = strings.TrimSpace(link.Icon)
-		link.Description = strings.TrimSpace(link.Description)
-		link.HoverEffect = strings.TrimSpace(link.HoverEffect)
-		link.HoverText = strings.TrimSpace(link.HoverText)
-
+	for index, link := range links {
 		if link.Label == "" {
 			return fmt.Errorf("external_links[%d].label is required", index)
 		}
@@ -99,7 +111,6 @@ func validateExternalLinks(links []domain.ExternalLink) error {
 		if !domain.ValidExternalLinkHoverEffect(link.HoverEffect) {
 			return fmt.Errorf("external_links[%d].hover_effect must be highlight, lift, or none", index)
 		}
-		link.HoverEffect = domain.EffectiveExternalLinkHoverEffect(link.HoverEffect)
 	}
 
 	return nil
