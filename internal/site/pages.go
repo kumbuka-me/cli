@@ -134,31 +134,143 @@ func markdownFileRoute(filename string) string {
 	return strings.Trim(clean, "/")
 }
 
-// markdownTitle extracts the first level-one heading or derives a title from the route.
+// markdownFence tracks an open fenced code block while scanning page titles.
+type markdownFence struct {
+	marker byte
+	length int
+}
+
+// markdownTitle extracts the first Markdown level-one heading or derives a title from the route.
 func markdownTitle(source, route string) (title string, hasTitle bool) {
-	fence := ""
+	var fence markdownFence
+	previous := ""
+	previousCanBeSetext := false
+
 	for line := range strings.SplitSeq(strings.TrimPrefix(source, "\ufeff"), "\n") {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
-			marker := trimmed[:3]
-			if fence == "" {
-				fence = marker
-			} else if marker == fence {
-				fence = ""
+		line = strings.TrimSuffix(line, "\r")
+		marker, length, rest, isFence := parseMarkdownFence(line)
+		if fence.marker != 0 {
+			if isFence && marker == fence.marker && length >= fence.length && strings.TrimSpace(rest) == "" {
+				fence = markdownFence{}
 			}
 			continue
 		}
-
-		if fence == "" {
-			title, ok := strings.CutPrefix(trimmed, "# ")
-			if ok && strings.TrimSpace(title) != "" {
-				return strings.TrimSpace(title), true
-			}
+		if isFence {
+			fence = markdownFence{marker: marker, length: length}
+			previousCanBeSetext = false
+			continue
 		}
+
+		if title, ok := markdownATXH1(line); ok {
+			return title, true
+		}
+		if previousCanBeSetext && markdownSetextH1(line) {
+			return strings.TrimSpace(previous), true
+		}
+
+		trimmed, contentLine := markdownContentLine(line)
+		previous = trimmed
+		previousCanBeSetext = contentLine && trimmed != ""
 	}
 
+	return derivedPageTitle(route), false
+}
+
+// parseMarkdownFence reports fenced-code markers indented by at most three spaces.
+func parseMarkdownFence(line string) (marker byte, length int, rest string, ok bool) {
+	content, valid := markdownIndentedLine(line)
+	if !valid || len(content) < 3 || (content[0] != '`' && content[0] != '~') {
+		return 0, 0, "", false
+	}
+
+	marker = content[0]
+	for length < len(content) && content[length] == marker {
+		length++
+	}
+	if length < 3 {
+		return 0, 0, "", false
+	}
+	return marker, length, content[length:], true
+}
+
+// markdownATXH1 returns the text of a valid level-one ATX heading.
+func markdownATXH1(line string) (string, bool) {
+	content, valid := markdownIndentedLine(line)
+	if !valid || len(content) == 0 || content[0] != '#' {
+		return "", false
+	}
+	if len(content) > 1 && content[1] == '#' {
+		return "", false
+	}
+	if len(content) > 1 && content[1] != ' ' && content[1] != '\t' {
+		return "", false
+	}
+
+	title := strings.TrimSpace(strings.TrimPrefix(content, "#"))
+	if title == "" {
+		return "", false
+	}
+	return trimATXClosingHashes(title), true
+}
+
+// trimATXClosingHashes removes an optional whitespace-delimited closing hash sequence.
+func trimATXClosingHashes(title string) string {
+	end := len(title)
+	for end > 0 && title[end-1] == '#' {
+		end--
+	}
+	if end == len(title) || end == 0 || (title[end-1] != ' ' && title[end-1] != '\t') {
+		return title
+	}
+	return strings.TrimSpace(title[:end])
+}
+
+// markdownSetextH1 reports whether line is a level-one Setext underline.
+func markdownSetextH1(line string) bool {
+	content, valid := markdownIndentedLine(line)
+	if !valid {
+		return false
+	}
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return false
+	}
+	for index := range len(content) {
+		if content[index] != '=' {
+			return false
+		}
+	}
+	return true
+}
+
+// markdownContentLine returns text eligible to precede a Setext heading.
+func markdownContentLine(line string) (string, bool) {
+	content, valid := markdownIndentedLine(line)
+	if !valid {
+		return "", false
+	}
+	return strings.TrimSpace(content), true
+}
+
+// markdownIndentedLine strips up to three leading spaces and rejects indented code lines.
+func markdownIndentedLine(line string) (string, bool) {
+	spaces := 0
+	for spaces < len(line) && line[spaces] == ' ' {
+		spaces++
+		if spaces == 4 {
+			return "", false
+		}
+	}
+	if spaces < len(line) && line[spaces] == '\t' {
+		return "", false
+	}
+	return line[spaces:], true
+}
+
+// derivedPageTitle creates a readable fallback title from a static route.
+func derivedPageTitle(route string) string {
 	if route == "" {
-		return "Home", false
+		return "Home"
 	}
 
 	segment := path.Base(route)
@@ -171,8 +283,7 @@ func markdownTitle(source, route string) (title string, hasTitle bool) {
 			words[index] = string(runes)
 		}
 	}
-
-	return strings.Join(words, " "), false
+	return strings.Join(words, " ")
 }
 
 // registerWikiTarget records an unambiguous wiki-link target.

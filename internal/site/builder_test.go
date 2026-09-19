@@ -118,15 +118,38 @@ func TestRewriteLocalURL(t *testing.T) {
 func TestMarkdownTitle(t *testing.T) {
 	t.Parallel()
 
-	title, found := markdownTitle("Intro\n\n# Static sites\n", "static-sites")
+	tests := []struct {
+		name      string
+		source    string
+		route     string
+		wantTitle string
+		wantFound bool
+	}{
+		{name: "ATX heading", source: "Intro\n\n# Static sites\n", route: "static-sites", wantTitle: "Static sites", wantFound: true},
+		{name: "ATX closing hashes", source: "# Static sites ###\n", route: "static-sites", wantTitle: "Static sites", wantFound: true},
+		{name: "Setext heading", source: "Static sites\n============\n", route: "static-sites", wantTitle: "Static sites", wantFound: true},
+		{name: "fallback", source: "No title\n", route: "getting-started", wantTitle: "Getting Started", wantFound: false},
+		{name: "indented code", source: "    # Not a title\n", route: "getting-started", wantTitle: "Getting Started", wantFound: false},
+		{
+			name:      "long fence ignores shorter marker",
+			source:    "````markdown\n```\n# Not a title\n````\n# Real title\n",
+			route:     "page",
+			wantTitle: "Real title",
+			wantFound: true,
+		},
+		{name: "hash without separator", source: "#Not a heading\n", route: "fallback-title", wantTitle: "Fallback Title", wantFound: false},
+	}
 
-	assert.True(t, found)
-	assert.Equal(t, "Static sites", title)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 
-	title, found = markdownTitle("No title\n", "getting-started")
+			title, found := markdownTitle(test.source, test.route)
 
-	assert.False(t, found)
-	assert.Equal(t, "Getting Started", title)
+			assert.Equal(t, test.wantTitle, title)
+			assert.Equal(t, test.wantFound, found)
+		})
+	}
 }
 
 func TestDiscoverPagesRejectsDuplicateRoutes(t *testing.T) {
