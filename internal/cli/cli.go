@@ -3,6 +3,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 
@@ -70,20 +71,24 @@ func Run(
 	if err != nil {
 		switch {
 		case tinyflags.IsHelpRequested(err), tinyflags.IsVersionRequested(err):
-			_, _ = fmt.Fprint(stdout, err.Error())
-			return nil
+			_, writeErr := fmt.Fprint(stdout, err.Error())
+			return writeErr
 		case tinyflags.IsCommandRequired(err):
 			help, _ := tinyflags.HelpText(err)
-			_, _ = fmt.Fprint(stderr, help)
-			return nil
+			_, writeErr := fmt.Fprint(stderr, help)
+			return writeErr
 		default:
-			_, _ = fmt.Fprintln(stderr, err)
+			if _, writeErr := fmt.Fprintln(stderr, err); writeErr != nil {
+				return errors.Join(err, writeErr)
+			}
 			return err
 		}
 	}
 
 	if err := runner.Run(ctx); err != nil {
-		_, _ = fmt.Fprintln(stderr, err)
+		if _, writeErr := fmt.Fprintln(stderr, err); writeErr != nil {
+			return errors.Join(err, writeErr)
+		}
 		return err
 	}
 

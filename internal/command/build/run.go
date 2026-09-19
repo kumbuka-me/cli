@@ -27,6 +27,8 @@ func Run(ctx context.Context, cfg Config, overrides map[string]any, stdout io.Wr
 		return err
 	}
 
-	_, _ = fmt.Fprintf(stdout, "Built %d pages into %s\n", result.Pages, result.OutputDir)
+	if _, err := fmt.Fprintf(stdout, "Built %d pages into %s\n", result.Pages, result.OutputDir); err != nil {
+		return fmt.Errorf("write build result: %w", err)
+	}
 	return nil
 }

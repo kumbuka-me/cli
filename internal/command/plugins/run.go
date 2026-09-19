@@ -25,7 +25,9 @@ func RunSync(ctx context.Context, cfg SyncConfig, stdout io.Writer) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintf(stdout, "Synced %d plugins from %s\n", len(resolved), cfg.File)
+	if _, err := fmt.Fprintf(stdout, "Synced %d plugins from %s\n", len(resolved), cfg.File); err != nil {
+		return fmt.Errorf("write sync result: %w", err)
+	}
 	return nil
 }
 
@@ -37,7 +39,7 @@ func RunList(cfg ListConfig, stdout io.Writer) error {
 	}
 
 	for _, dependency := range file.Plugins {
-		_, _ = fmt.Fprintf(
+		if _, err := fmt.Fprintf(
 			stdout,
 			"%s %s %s@%s%s\n",
 			dependency.ID,
@@ -45,7 +47,9 @@ func RunList(cfg ListConfig, stdout io.Writer) error {
 			dependency.Repository,
 			dependency.TagPrefix,
 			dependency.Version,
-		)
+		); err != nil {
+			return fmt.Errorf("write plugin list: %w", err)
+		}
 	}
 
 	return nil
@@ -75,7 +79,9 @@ func RunAdd(ctx context.Context, cfg AddConfig, stdout io.Writer) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintf(stdout, "Added %s %s\n", dependency.ID, dependency.Version)
+	if _, err := fmt.Fprintf(stdout, "Added %s %s\n", dependency.ID, dependency.Version); err != nil {
+		return fmt.Errorf("write add result: %w", err)
+	}
 	return nil
 }
 
@@ -85,6 +91,8 @@ func RunRemove(cfg RemoveConfig, stdout io.Writer) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintf(stdout, "Removed %s\n", cfg.ID)
+	if _, err := fmt.Fprintf(stdout, "Removed %s\n", cfg.ID); err != nil {
+		return fmt.Errorf("write remove result: %w", err)
+	}
 	return nil
 }
