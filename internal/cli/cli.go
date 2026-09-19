@@ -82,5 +82,10 @@ func Run(
 		}
 	}
 
-	return runner.Run(ctx)
+	if err := runner.Run(ctx); err != nil {
+		_, _ = fmt.Fprintln(stderr, err)
+		return err
+	}
+
+	return nil
 }

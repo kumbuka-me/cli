@@ -24,7 +24,6 @@ func Run(ctx context.Context, cfg Config, overrides map[string]any, stdout io.Wr
 
 	result, err := site.Build(ctx, cfg.Site)
 	if err != nil {
-		setupLogger.Error("Build failed", "error", err)
 		return err
 	}
 

@@ -58,3 +58,22 @@ version = "1.0.1"
 	assert.Contains(t, stdout.String(), "me.kumbuka.mermaid 1.0.1")
 	assert.Contains(t, stdout.String(), "kumbuka-me/plugins@mermaid/v1.0.1")
 }
+
+func TestRunPrintsCommandExecutionErrors(t *testing.T) {
+	t.Parallel()
+
+	filename := filepath.Join(t.TempDir(), ".kumbukaplugins")
+	require.NoError(t, os.WriteFile(filename, []byte("not valid toml = ["), 0o644))
+
+	var stderr bytes.Buffer
+	err := Run(
+		context.Background(),
+		[]string{"plugins", "list", "--file", filename},
+		"test",
+		io.Discard,
+		&stderr,
+	)
+
+	require.Error(t, err)
+	assert.Contains(t, stderr.String(), "parse "+filename)
+}
