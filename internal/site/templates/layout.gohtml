@@ -10,6 +10,7 @@
       {{ if .FaviconURL }}<link rel="icon" href="{{ .FaviconURL }}" />{{ end }}
       {{ if .FaviconICOURL }}<link rel="alternate icon" href="{{ .FaviconICOURL }}" type="image/x-icon" />{{ end }}
       <link rel="stylesheet" href="{{ asseturl "css/app.css" }}" />
+      <link rel="stylesheet" href="{{ asseturl "css/static-layout.css" }}" />
       <link rel="stylesheet"
             href="{{ .BasePath }}plugins/styles.css"
             data-plugin-styles />
@@ -23,6 +24,7 @@
           data-navigation-style="{{ .NavigationStyle }}"
           data-navigation-density="{{ .NavigationDensity }}"
           data-navigation-guides="true"
+          data-expand-content-when-hidden="{{ .ExpandContentWhenHidden }}"
           data-current-page="{{ .CurrentRoute }}"
           style="--sidebar: {{ .SidebarWidth }}px">
       <header class="topbar">
@@ -122,4 +124,3 @@
     </body>
   </html>
 {{ end }}
-

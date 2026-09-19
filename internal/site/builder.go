@@ -89,6 +89,8 @@ type viewData struct {
 	NavigationDensity string
 	// SidebarWidth is the configured desktop sidebar width in pixels.
 	SidebarWidth int
+	// ExpandContentWhenHidden reports whether hidden navigation or page contents should release layout space.
+	ExpandContentWhenHidden bool
 	// ThemeData is the serialized theme catalog embedded for browser switching.
 	ThemeData template.JS
 	// PluginModules is the serialized browser plugin module catalog.
@@ -298,19 +300,20 @@ func buildNavigationPages(pages []sourcePage) []navigation.Page {
 // commonViewData assembles template data shared by every generated page.
 func commonViewData(plan buildPlan, branding brandingData) viewData {
 	return viewData{
-		LogoURL:           branding.LogoURL,
-		FaviconURL:        branding.FaviconURL,
-		FaviconICOURL:     branding.FaviconICOURL,
-		SiteName:          plan.config.SiteName,
-		SiteURL:           plan.config.SiteURL,
-		BasePath:          plan.basePath,
-		Language:          plan.config.Language,
-		ActiveTheme:       plan.config.Theme,
-		NavigationStyle:   plan.config.NavigationStyle,
-		NavigationDensity: plan.config.NavigationDensity,
-		SidebarWidth:      plan.config.SidebarWidth,
-		ThemeData:         plan.themeData,
-		ExternalLinks:     slices.Clone(plan.config.ExternalLinks),
+		LogoURL:                 branding.LogoURL,
+		FaviconURL:              branding.FaviconURL,
+		FaviconICOURL:           branding.FaviconICOURL,
+		SiteName:                plan.config.SiteName,
+		SiteURL:                 plan.config.SiteURL,
+		BasePath:                plan.basePath,
+		Language:                plan.config.Language,
+		ActiveTheme:             plan.config.Theme,
+		NavigationStyle:         plan.config.NavigationStyle,
+		NavigationDensity:       plan.config.NavigationDensity,
+		SidebarWidth:            plan.config.SidebarWidth,
+		ExpandContentWhenHidden: plan.config.ExpandContentWhenHidden,
+		ThemeData:               plan.themeData,
+		ExternalLinks:           slices.Clone(plan.config.ExternalLinks),
 	}
 }
 

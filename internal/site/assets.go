@@ -14,6 +14,7 @@ import (
 
 var staticBrowserAssets = []string{
 	"css/app.css",
+	"css/static-layout.css",
 	"js/static.js",
 	"js/theme-init.js",
 	"js/core/clipboard.js",

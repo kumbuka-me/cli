@@ -42,6 +42,8 @@ type Config struct {
 	NavigationDensity string `toml:"navigation_density"`
 	// SidebarWidth is the desktop sidebar width in pixels.
 	SidebarWidth int `toml:"sidebar_width"`
+	// ExpandContentWhenHidden lets static pages reclaim hidden navigation and page-contents space.
+	ExpandContentWhenHidden bool `toml:"expand_content_when_hidden"`
 	// RobotsPolicy controls generated robots.txt content.
 	RobotsPolicy string `toml:"robots"`
 	// ExternalLinks contains configured top-bar links.
@@ -60,16 +62,17 @@ func defaultConfig() Config {
 	preferences := domain.DefaultUserPreferences()
 
 	return Config{
-		SiteName:          "Documentation",
-		SourceDir:         "docs",
-		OutputDir:         "site",
-		Theme:             themes.DefaultTheme,
-		Language:          "en",
-		NavigationStyle:   preferences.NavigationStyle,
-		NavigationDensity: preferences.NavigationDensity,
-		SidebarWidth:      preferences.SidebarWidth,
-		RobotsPolicy:      domain.RobotsPolicyAllow,
-		PluginsFile:       pluginproject.DefaultFile,
+		SiteName:                "Documentation",
+		SourceDir:               "docs",
+		OutputDir:               "site",
+		Theme:                   themes.DefaultTheme,
+		Language:                "en",
+		NavigationStyle:         preferences.NavigationStyle,
+		NavigationDensity:       preferences.NavigationDensity,
+		SidebarWidth:            preferences.SidebarWidth,
+		ExpandContentWhenHidden: true,
+		RobotsPolicy:            domain.RobotsPolicyAllow,
+		PluginsFile:             pluginproject.DefaultFile,
 	}
 }
 

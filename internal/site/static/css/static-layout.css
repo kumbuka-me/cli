@@ -1,0 +1,48 @@
+/* Static-site layout options that depend on generated site configuration. */
+
+.static-site[data-expand-content-when-hidden="true"] .page {
+  --page-max-width: 1180px;
+  --page-reading-width: 900px;
+
+  max-width: var(--page-max-width);
+}
+
+.static-site[data-expand-content-when-hidden="true"] .page-reading {
+  max-width: var(--page-max-width);
+}
+
+.static-site[data-expand-content-when-hidden="true"]
+  .page-reading.with-contents {
+  grid-template-columns: minmax(0, var(--page-reading-width)) minmax(
+      210px,
+      240px
+    );
+}
+
+.static-site[data-expand-content-when-hidden="true"]
+  .page-reading:not(.with-contents)
+  .prose {
+  max-width: var(--page-reading-width);
+}
+
+.static-site[data-expand-content-when-hidden="true"]
+  .page-reading.contents-hidden
+  .prose {
+  max-width: var(--page-max-width);
+}
+
+@media (min-width: 801px) {
+  html.sidebar-hidden
+    .static-site[data-expand-content-when-hidden="true"]
+    .page {
+    --page-max-width: calc(1180px + var(--sidebar));
+    --page-reading-width: calc(900px + var(--sidebar));
+  }
+
+  html.sidebar-hidden
+    .static-site[data-expand-content-when-hidden="true"]
+    .shell:not(.admin-shell)
+    > main:not(.with-page-contents) {
+    max-width: calc(1480px + var(--sidebar));
+  }
+}
