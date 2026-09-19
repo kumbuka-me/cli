@@ -409,3 +409,28 @@ assets_dir = "assets"
 	_, err = os.Stat(filepath.Join(config.OutputDir, "index.html"))
 	require.NoError(t, err)
 }
+
+func TestBuilderPreservesExistingOutputWhenRenderingFails(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	source := filepath.Join(root, "docs")
+	output := filepath.Join(root, "site")
+	require.NoError(t, os.MkdirAll(source, 0o755))
+	require.NoError(t, os.MkdirAll(output, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(source, "index.md"), []byte("# Home\n\n[[Missing page]]\n"), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(output, "current.txt"), []byte("current"), 0o644))
+
+	config := defaultConfig()
+	config.SourceDir = source
+	config.OutputDir = output
+	builder := newBuilder(staticAssets)
+	builder.renderer = testMarkdownRenderer(t)
+
+	_, err := builder.build(context.Background(), config)
+
+	require.ErrorContains(t, err, "unresolved wiki link")
+	data, readErr := os.ReadFile(filepath.Join(output, "current.txt"))
+	require.NoError(t, readErr)
+	assert.Equal(t, "current", string(data))
+}

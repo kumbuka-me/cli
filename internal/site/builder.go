@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"slices"
 
+	"github.com/kumbuka-me/cli/internal/stagedwrite"
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
 	"github.com/kumbuka-me/kumbuka/pkg/icons"
 	md "github.com/kumbuka-me/kumbuka/pkg/markdown"
@@ -99,8 +100,35 @@ func newBuilder(appFS fs.FS) *builder {
 	}
 }
 
-// build renders all configured Markdown files into the configured output directory.
+// build renders all configured Markdown files into staged output and replaces the destination after a complete build.
 func (b *builder) build(ctx context.Context, config Config) (buildResult, error) {
+	if err := validateResolvedConfig(config); err != nil {
+		return buildResult{}, err
+	}
+
+	outputDir := config.OutputDir
+	var result buildResult
+	err := stagedwrite.ReplaceDirectory(outputDir, func(staging string) error {
+		stagedConfig := config
+		stagedConfig.OutputDir = staging
+
+		built, err := b.buildInto(ctx, stagedConfig)
+		if err != nil {
+			return err
+		}
+		result = built
+		return nil
+	})
+	if err != nil {
+		return buildResult{}, err
+	}
+
+	result.outputDir = outputDir
+	return result, nil
+}
+
+// buildInto renders one site into an empty staging directory.
+func (b *builder) buildInto(ctx context.Context, config Config) (buildResult, error) {
 	// Copy the builder so a scoped project renderer is never retained after close.
 	local := *b
 	b = &local

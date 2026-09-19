@@ -12,6 +12,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/kumbuka-me/cli/internal/stagedwrite"
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
 )
 
@@ -63,28 +64,9 @@ func Export(ctx context.Context, repository repository, outputDir string) error 
 		return err
 	}
 
-	absolute, err := filepath.Abs(outputDir)
-	if err != nil {
-		return err
-	}
-	parent := filepath.Dir(absolute)
-	if err := os.MkdirAll(parent, 0o755); err != nil {
-		return err
-	}
-
-	temporary, err := os.MkdirTemp(parent, ".kumbuka-mirror-*")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(temporary) // nolint:errcheck
-
-	if err := exportInto(ctx, repository, temporary); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(absolute); err != nil {
-		return err
-	}
-	return os.Rename(temporary, absolute)
+	return stagedwrite.ReplaceDirectory(outputDir, func(staging string) error {
+		return exportInto(ctx, repository, staging)
+	})
 }
 
 // exportInto writes a complete mirror snapshot into an already-created directory.

@@ -33,11 +33,8 @@ type brandingData struct {
 	FaviconICOURL string
 }
 
-// prepareOutput recreates the output directory and publishes runtime, source, and branding assets.
+// prepareOutput publishes runtime, source, and branding assets into an empty staged output directory.
 func (b *builder) prepareOutput(config Config, basePath string) (brandingData, error) {
-	if err := recreateDirectory(config.OutputDir); err != nil {
-		return brandingData{}, err
-	}
 	if err := b.copyBuildAssets(config); err != nil {
 		return brandingData{}, err
 	}
@@ -55,15 +52,6 @@ func (b *builder) prepareOutput(config Config, basePath string) (brandingData, e
 	}
 
 	return branding, nil
-}
-
-// recreateDirectory replaces one directory with an empty writable directory.
-func recreateDirectory(directory string) error {
-	if err := os.RemoveAll(directory); err != nil {
-		return err
-	}
-
-	return os.MkdirAll(directory, 0o755)
 }
 
 // copyBuildAssets publishes configured assets, required browser assets, and source files in precedence order.
