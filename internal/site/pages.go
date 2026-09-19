@@ -44,6 +44,9 @@ func (d *pageDiscovery) visit(filename string, entry fs.DirEntry, walkErr error)
 	if walkErr != nil {
 		return walkErr
 	}
+	if err := rejectSymlink(filename, entry); err != nil {
+		return err
+	}
 	if filename == d.sourceDir {
 		return nil
 	}

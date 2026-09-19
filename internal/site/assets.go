@@ -101,6 +101,9 @@ func copySourceAssets(sourceDir, outputDir string) error {
 		if walkErr != nil {
 			return walkErr
 		}
+		if err := rejectSymlink(filename, entry); err != nil {
+			return err
+		}
 		if filename == sourceDir {
 			return nil
 		}
@@ -121,6 +124,14 @@ func copySourceAssets(sourceDir, outputDir string) error {
 
 		return copyFile(filename, filepath.Join(outputDir, relative))
 	})
+}
+
+// rejectSymlink prevents a static build from following filesystem links outside its declared source roots.
+func rejectSymlink(filename string, entry fs.DirEntry) error {
+	if entry.Type()&fs.ModeSymlink != 0 {
+		return fmt.Errorf("%s: symbolic links are not supported", filename)
+	}
+	return nil
 }
 
 // publishBranding resolves and publishes only branding files explicitly configured by the user.

@@ -434,3 +434,21 @@ func TestBuilderPreservesExistingOutputWhenRenderingFails(t *testing.T) {
 	require.NoError(t, readErr)
 	assert.Equal(t, "current", string(data))
 }
+
+func TestDiscoverPagesRejectsSymbolicLinks(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	source := filepath.Join(root, "docs")
+	require.NoError(t, os.MkdirAll(source, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(source, "index.md"), []byte("# Home\n"), 0o644))
+	external := filepath.Join(root, "outside.md")
+	require.NoError(t, os.WriteFile(external, []byte("# Outside\n"), 0o644))
+	if err := os.Symlink(external, filepath.Join(source, "linked.md")); err != nil {
+		t.Skipf("symbolic links unavailable: %v", err)
+	}
+
+	_, err := discoverPages(source)
+
+	require.ErrorContains(t, err, "symbolic links are not supported")
+}

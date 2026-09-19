@@ -86,6 +86,25 @@ func TestExport(t *testing.T) {
 		assert.Contains(t, string(manifest), `"format": 1`)
 	})
 
+	t.Run("rejects unsafe page slugs without replacing current output", func(t *testing.T) {
+		t.Parallel()
+
+		root := t.TempDir()
+		output := filepath.Join(root, "mirror")
+		require.NoError(t, os.MkdirAll(output, 0o755))
+		require.NoError(t, os.WriteFile(filepath.Join(output, "current"), []byte("current"), 0o644))
+		repository := repositoryStub{pages: []domain.Page{{Slug: "../../outside", Markdown: "# Unsafe\n"}}}
+
+		err := Export(context.Background(), repository, output)
+
+		require.ErrorContains(t, err, "unsafe path segment")
+		data, readErr := os.ReadFile(filepath.Join(output, "current"))
+		require.NoError(t, readErr)
+		assert.Equal(t, "current", string(data))
+		_, statErr := os.Stat(filepath.Join(root, "outside.md"))
+		assert.ErrorIs(t, statErr, os.ErrNotExist)
+	})
+
 	t.Run("replaces stale output atomically", func(t *testing.T) {
 		t.Parallel()
 

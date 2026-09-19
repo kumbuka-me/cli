@@ -198,7 +198,10 @@ func exportAttachments(ctx context.Context, repository repository, outputDir str
 
 // writePage writes one page Markdown file and its metadata sidecar.
 func writePage(outputDir string, page domain.Page) error {
-	relative := cleanSlug(page.Slug)
+	relative, err := mirrorRelativePagePath(page.Slug)
+	if err != nil {
+		return fmt.Errorf("page %q: %w", page.Slug, err)
+	}
 	markdownPath := filepath.Join(outputDir, "pages", filepath.FromSlash(relative)+".md")
 	if err := writeFile(markdownPath, []byte(page.Markdown)); err != nil {
 		return fmt.Errorf("write page %q: %w", page.Slug, err)
@@ -258,13 +261,23 @@ func writeFile(filename string, data []byte) error {
 	return os.WriteFile(filename, data, 0o644)
 }
 
-// cleanSlug converts a Kumbuka page path into a safe mirror-relative path.
-func cleanSlug(slug string) string {
+// mirrorRelativePagePath validates a page slug before it is used as a filesystem path.
+func mirrorRelativePagePath(slug string) (string, error) {
 	cleaned := strings.Trim(strings.TrimSpace(slug), "/")
 	if cleaned == "" {
-		return "index"
+		return "index", nil
 	}
-	return cleaned
+	if strings.Contains(cleaned, `\`) {
+		return "", errors.New("page slug must use forward slashes")
+	}
+
+	for _, segment := range strings.Split(cleaned, "/") {
+		if segment == "" || segment == "." || segment == ".." {
+			return "", errors.New("page slug contains an unsafe path segment")
+		}
+	}
+
+	return cleaned, nil
 }
 
 // compareID orders integer identifiers in ascending order.

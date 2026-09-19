@@ -72,3 +72,23 @@ func TestPublishConfiguredFile(t *testing.T) {
 		assert.Equal(t, "logo", string(data))
 	})
 }
+
+func TestCopySourceAssetsRejectsSymbolicLinks(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	source := filepath.Join(root, "assets")
+	output := filepath.Join(root, "site")
+	require.NoError(t, os.MkdirAll(source, 0o755))
+	external := filepath.Join(root, "outside.txt")
+	require.NoError(t, os.WriteFile(external, []byte("outside"), 0o644))
+	if err := os.Symlink(external, filepath.Join(source, "linked.txt")); err != nil {
+		t.Skipf("symbolic links unavailable: %v", err)
+	}
+
+	err := copySourceAssets(source, output)
+
+	require.ErrorContains(t, err, "symbolic links are not supported")
+	_, statErr := os.Stat(filepath.Join(output, "linked.txt"))
+	assert.ErrorIs(t, statErr, os.ErrNotExist)
+}
