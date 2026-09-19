@@ -66,3 +66,24 @@ version = "1.0.1"
 	_, err := Load(filename)
 	require.ErrorContains(t, err, "duplicate plugin io.example")
 }
+
+func TestSaveDoesNotMutateCaller(t *testing.T) {
+	t.Parallel()
+
+	filename := filepath.Join(t.TempDir(), DefaultFile)
+	file := File{Plugins: []Dependency{
+		{ID: "z.example", Repository: " example/z.git ", Version: "v1.0.0"},
+		{ID: "a.example", Repository: "example/a", Version: "2.0.0"},
+	}}
+	before := append([]Dependency(nil), file.Plugins...)
+
+	require.NoError(t, Save(filename, file))
+
+	assert.Equal(t, before, file.Plugins)
+	loaded, err := Load(filename)
+	require.NoError(t, err)
+	assert.Equal(t, "a.example", loaded.Plugins[0].ID)
+	assert.Equal(t, "z.example", loaded.Plugins[1].ID)
+	assert.Equal(t, "example/z", loaded.Plugins[1].Repository)
+	assert.Equal(t, "1.0.0", loaded.Plugins[1].Version)
+}

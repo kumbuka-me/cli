@@ -31,17 +31,24 @@ var (
 
 // File is the versioned .kumbukaplugins project dependency manifest.
 type File struct {
-	Format  int          `toml:"format"`
+	// Format identifies the manifest schema version.
+	Format int `toml:"format"`
+	// Plugins contains the reproducibly pinned project dependencies.
 	Plugins []Dependency `toml:"plugin"`
 }
 
 // Dependency pins one GitHub Release plugin package.
 type Dependency struct {
-	ID         string `toml:"id"`
+	// ID is the plugin manifest identifier expected inside the package.
+	ID string `toml:"id"`
+	// Repository is the GitHub owner/repository containing the release.
 	Repository string `toml:"repository"`
-	TagPrefix  string `toml:"tag_prefix"`
-	Asset      string `toml:"asset"`
-	Version    string `toml:"version"`
+	// TagPrefix is prepended to Version to form the release tag.
+	TagPrefix string `toml:"tag_prefix"`
+	// Asset is the release asset basename without version or extension.
+	Asset string `toml:"asset"`
+	// Version is the pinned semantic version without a leading v.
+	Version string `toml:"version"`
 }
 
 // Load reads a project dependency file. A missing file is an empty project.
@@ -64,46 +71,18 @@ func Load(filename string) (File, error) {
 		return File{}, fmt.Errorf("unsupported %s format %d", filename, file.Format)
 	}
 
-	seen := make(map[string]bool, len(file.Plugins))
-	for index := range file.Plugins {
-		dependency, err := NormalizeDependency(file.Plugins[index])
-		if err != nil {
-			return File{}, fmt.Errorf("plugin %d: %w", index+1, err)
-		}
-		if seen[dependency.ID] {
-			return File{}, fmt.Errorf("duplicate plugin %s", dependency.ID)
-		}
-		seen[dependency.ID] = true
-		file.Plugins[index] = dependency
-	}
-
-	slices.SortFunc(file.Plugins, func(left, right Dependency) int {
-		return strings.Compare(left.ID, right.ID)
-	})
-
-	return file, nil
+	return normalizeFile(file)
 }
 
-// Save writes a canonical dependency file atomically.
+// Save writes a canonical dependency file atomically without mutating file.
 func Save(filename string, file File) error {
 	file.Format = fileFormat
-	seen := make(map[string]bool, len(file.Plugins))
-	for index := range file.Plugins {
-		dependency, err := NormalizeDependency(file.Plugins[index])
-		if err != nil {
-			return fmt.Errorf("plugin %d: %w", index+1, err)
-		}
-		if seen[dependency.ID] {
-			return fmt.Errorf("duplicate plugin %s", dependency.ID)
-		}
-		seen[dependency.ID] = true
-		file.Plugins[index] = dependency
+	normalized, err := normalizeFile(file)
+	if err != nil {
+		return err
 	}
-	slices.SortFunc(file.Plugins, func(left, right Dependency) int {
-		return strings.Compare(left.ID, right.ID)
-	})
 
-	data, err := toml.Marshal(file)
+	data, err := toml.Marshal(normalized)
 	if err != nil {
 		return err
 	}
@@ -132,6 +111,28 @@ func Save(filename string, file File) error {
 	}
 
 	return os.Rename(temporaryName, filename)
+}
+
+// normalizeFile clones, validates, and deterministically orders a dependency manifest.
+func normalizeFile(file File) (File, error) {
+	file.Plugins = slices.Clone(file.Plugins)
+	seen := make(map[string]struct{}, len(file.Plugins))
+	for index := range file.Plugins {
+		dependency, err := NormalizeDependency(file.Plugins[index])
+		if err != nil {
+			return File{}, fmt.Errorf("plugin %d: %w", index+1, err)
+		}
+		if _, found := seen[dependency.ID]; found {
+			return File{}, fmt.Errorf("duplicate plugin %s", dependency.ID)
+		}
+		seen[dependency.ID] = struct{}{}
+		file.Plugins[index] = dependency
+	}
+
+	slices.SortFunc(file.Plugins, func(left, right Dependency) int {
+		return strings.Compare(left.ID, right.ID)
+	})
+	return file, nil
 }
 
 // NormalizeDependency validates and canonicalizes one dependency declaration.
@@ -165,6 +166,7 @@ func NormalizeDependency(dependency Dependency) (Dependency, error) {
 	return dependency, nil
 }
 
+// validRepository reports whether repository is a safe GitHub owner/repository identifier.
 func validRepository(repository string) bool {
 	if !repositoryPattern.MatchString(repository) {
 		return false
