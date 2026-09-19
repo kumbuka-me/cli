@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"path/filepath"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -85,4 +86,62 @@ func TestResolverDownloadsVerifiesAndCachesPackage(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, resolved, 1)
 	assert.Equal(t, 2, requests)
+}
+
+func TestResolveBundledRejectsMalformedPackage(t *testing.T) {
+	t.Parallel()
+
+	dependency := Dependency{
+		ID:         "com.example.chart",
+		Repository: "example/chart",
+		TagPrefix:  "v",
+		Asset:      "chart",
+		Version:    "2.3.0",
+	}
+	bundled := fstest.MapFS{
+		"chart.kumbukaplugin": {Data: []byte("not a plugin archive")},
+	}
+
+	_, found, err := resolveBundled(bundled, dependency)
+
+	assert.False(t, found)
+	require.ErrorContains(t, err, "validate bundled plugin")
+}
+
+func TestResolveBundledTreatsIdentityMismatchAsCacheMiss(t *testing.T) {
+	t.Parallel()
+
+	dependency := Dependency{
+		ID:         "com.example.chart",
+		Repository: "example/chart",
+		TagPrefix:  "v",
+		Asset:      "chart",
+		Version:    "2.3.0",
+	}
+	bundled := fstest.MapFS{
+		"chart.kumbukaplugin": {Data: fixtureArchive(t, "com.example.other", "2.3.0")},
+	}
+
+	_, found, err := resolveBundled(bundled, dependency)
+
+	require.NoError(t, err)
+	assert.False(t, found)
+}
+
+func TestResolverCacheFilenameUsesFullRepositoryDigest(t *testing.T) {
+	t.Parallel()
+
+	resolver := &Resolver{CacheDir: "/cache"}
+	dependency := Dependency{
+		ID:         "com.example.chart",
+		Repository: "example/chart",
+		TagPrefix:  "v",
+		Asset:      "chart",
+		Version:    "2.3.0",
+	}
+
+	filename := resolver.cacheFilename(dependency)
+	digestDirectory := filepath.Base(filepath.Dir(filepath.Dir(filepath.Dir(filename))))
+
+	assert.Len(t, digestDirectory, sha256.Size*2)
 }
