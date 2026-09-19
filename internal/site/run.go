@@ -4,7 +4,9 @@ import "context"
 
 // Result summarizes one completed static site build.
 type Result struct {
-	Pages     int
+	// Pages is the number of generated documentation pages.
+	Pages int
+	// OutputDir is the final generated site directory.
 	OutputDir string
 }
 

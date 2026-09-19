@@ -8,28 +8,38 @@ import (
 
 // SyncConfig contains plugins sync settings.
 type SyncConfig struct {
+	// File is the project plugin dependency manifest.
 	File string
 }
 
 // ListConfig contains plugins list settings.
 type ListConfig struct {
+	// File is the project plugin dependency manifest.
 	File string
 }
 
 // AddConfig contains plugins add settings.
 type AddConfig struct {
-	File       string
-	ID         string
+	// File is the project plugin dependency manifest.
+	File string
+	// ID is the plugin manifest identifier to add.
+	ID string
+	// Repository is the GitHub owner/repository containing the release.
 	Repository string
-	Version    string
-	TagPrefix  string
-	Asset      string
+	// Version is the pinned plugin version.
+	Version string
+	// TagPrefix is prepended to Version to form the release tag.
+	TagPrefix string
+	// Asset is the release asset basename.
+	Asset string
 }
 
 // RemoveConfig contains plugins remove settings.
 type RemoveConfig struct {
+	// File is the project plugin dependency manifest.
 	File string
-	ID   string
+	// ID identifies the dependency to remove.
+	ID string
 }
 
 // BindSyncFlags registers plugins sync flags.

@@ -10,9 +10,12 @@ const defaultOutputDir = "kumbuka-mirror"
 
 // Config contains database mirror command settings.
 type Config struct {
+	// DatabaseURL identifies the PostgreSQL source database.
 	DatabaseURL string
-	OutputDir   string
-	LogFormat   logging.LogFormat
+	// OutputDir receives the generated mirror snapshot.
+	OutputDir string
+	// LogFormat selects text or JSON command logging.
+	LogFormat logging.LogFormat
 }
 
 // BindFlags registers mirror flags and returns the parsed configuration.

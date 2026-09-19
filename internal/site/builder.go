@@ -19,75 +19,120 @@ import (
 
 // builder converts Markdown files into one read-only static site.
 type builder struct {
-	appFS    fs.FS
+	// appFS contains the browser runtime assets published into generated sites.
+	appFS fs.FS
+	// renderer optionally supplies an externally owned plugin-aware renderer.
 	renderer *md.Renderer
 }
 
 // buildResult summarizes one completed static build.
 type buildResult struct {
-	pages     int
+	// pages is the number of generated source pages.
+	pages int
+	// outputDir is the final destination reported to the caller.
 	outputDir string
 }
 
 // sourcePage contains one discovered Markdown page and its generated data.
 type sourcePage struct {
-	SourcePath      string
-	Route           string
-	Title           string
-	Markdown        string
+	// SourcePath is the slash-separated Markdown path relative to SourceDir.
+	SourcePath string
+	// Route is the directory-style public route without leading or trailing slashes.
+	Route string
+	// Title is the discovered or derived page title.
+	Title string
+	// Markdown contains the original source text.
+	Markdown string
+	// HasTitleHeading reports whether Markdown already supplied its page H1.
 	HasTitleHeading bool
-	HTML            template.HTML
-	Contents        []md.Heading
-	SearchText      string
+	// HTML is the processed rendered body inserted into the page template.
+	HTML template.HTML
+	// Contents contains rendered headings used by the page contents navigation.
+	Contents []md.Heading
+	// SearchText is normalized rendered text stored in the browser search index.
+	SearchText string
 }
 
 // searchEntry is one browser-side static search document.
 type searchEntry struct {
+	// Title is the page title shown in search results.
 	Title string `json:"title"`
-	URL   string `json:"url"`
-	Text  string `json:"text"`
+	// URL is the generated public page URL.
+	URL string `json:"url"`
+	// Text is normalized rendered page text used for matching and summaries.
+	Text string `json:"text"`
 }
 
 // viewData contains the shared data rendered by static site templates.
 type viewData struct {
-	LogoURL           string
-	FaviconURL        string
-	FaviconICOURL     string
-	SiteName          string
-	SiteURL           string
-	BasePath          string
-	Language          string
-	Title             string
-	ActiveTheme       string
-	NavigationStyle   string
+	// LogoURL is the published site logo URL.
+	LogoURL string
+	// FaviconURL is the published modern favicon URL.
+	FaviconURL string
+	// FaviconICOURL is the published legacy favicon URL.
+	FaviconICOURL string
+	// SiteName is the configured documentation title.
+	SiteName string
+	// SiteURL is the configured published site URL.
+	SiteURL string
+	// BasePath is the normalized public URL prefix.
+	BasePath string
+	// Language is the generated page content language.
+	Language string
+	// Title is the current page title.
+	Title string
+	// ActiveTheme is the configured initial theme name.
+	ActiveTheme string
+	// NavigationStyle is the configured desktop layout.
+	NavigationStyle string
+	// NavigationDensity is the configured navigation spacing.
 	NavigationDensity string
-	SidebarWidth      int
-	ThemeData         template.JS
-	PluginModules     template.JS
-	CurrentRoute      string
-	Navigation        []navigation.Node
-	HTML              template.HTML
-	PageContents      []md.Heading
-	ExternalLinks     []domain.ExternalLink
+	// SidebarWidth is the configured desktop sidebar width in pixels.
+	SidebarWidth int
+	// ThemeData is the serialized theme catalog embedded for browser switching.
+	ThemeData template.JS
+	// PluginModules is the serialized browser plugin module catalog.
+	PluginModules template.JS
+	// CurrentRoute identifies the current page for active navigation state.
+	CurrentRoute string
+	// Navigation is the page-specific navigation tree.
+	Navigation []navigation.Node
+	// HTML is the trusted renderer output inserted into the page layout.
+	HTML template.HTML
+	// PageContents contains headings shown in the page contents navigation.
+	PageContents []md.Heading
+	// ExternalLinks contains normalized configured top-bar links.
+	ExternalLinks []domain.ExternalLink
 }
 
 // buildPlan contains validated and precomputed state shared by one build.
 type buildPlan struct {
-	config          Config
-	basePath        string
-	pages           []sourcePage
-	routesBySource  map[string]string
-	wikiTargets     map[string]string
+	// config is the validated configuration for the staged output directory.
+	config Config
+	// basePath is the normalized public URL prefix.
+	basePath string
+	// pages contains all discovered Markdown sources in deterministic order.
+	pages []sourcePage
+	// routesBySource maps source Markdown paths to generated routes.
+	routesBySource map[string]string
+	// wikiTargets maps unambiguous normalized wiki-link targets to routes.
+	wikiTargets map[string]string
+	// navigationPages is the flat navigation input derived from pages.
 	navigationPages []navigation.Page
-	navigationTree  []navigation.Node
-	themeData       template.JS
+	// navigationTree is the hierarchy exposed to page-scoped plugin capabilities.
+	navigationTree []navigation.Node
+	// themeData is the serialized theme catalog embedded into generated pages.
+	themeData template.JS
 }
 
 // renderedPage contains one processed page body plus search and contents data.
 type renderedPage struct {
-	html       string
+	// html is the rewritten static page body.
+	html string
+	// searchText is normalized text extracted from html.
 	searchText string
-	contents   []md.Heading
+	// contents contains headings retained for the page contents navigation.
+	contents []md.Heading
 }
 
 // newBuilder constructs the filesystem-backed static site builder.

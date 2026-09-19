@@ -18,10 +18,14 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+// pageDiscovery accumulates Markdown pages and guards route uniqueness during a source walk.
 type pageDiscovery struct {
+	// sourceDir is the root currently being traversed.
 	sourceDir string
-	pages     []sourcePage
-	routes    map[string]string
+	// pages contains discovered source pages.
+	pages []sourcePage
+	// routes maps generated routes to the source file that claimed them.
+	routes map[string]string
 }
 
 // discoverPages discovers Markdown source files and maps them to static routes.
@@ -136,7 +140,9 @@ func markdownFileRoute(filename string) string {
 
 // markdownFence tracks an open fenced code block while scanning page titles.
 type markdownFence struct {
+	// marker is the backtick or tilde character opening the fence.
 	marker byte
+	// length is the opening marker run length required by a closing fence.
 	length int
 }
 

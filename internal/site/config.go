@@ -16,22 +16,38 @@ const DefaultConfigPath = "kumbuka-site.toml"
 
 // Config contains filesystem-backed static site build settings.
 type Config struct {
-	Logo              string                `toml:"logo"`
-	Favicon           string                `toml:"favicon"`
-	FaviconICO        string                `toml:"favicon_ico"`
-	AssetsDir         string                `toml:"assets_dir"`
-	SiteName          string                `toml:"site_name"`
-	SiteURL           string                `toml:"site_url"`
-	SourceDir         string                `toml:"source_dir"`
-	OutputDir         string                `toml:"output_dir"`
-	Theme             string                `toml:"theme"`
-	Language          string                `toml:"language"`
-	NavigationStyle   string                `toml:"navigation_style"`
-	NavigationDensity string                `toml:"navigation_density"`
-	SidebarWidth      int                   `toml:"sidebar_width"`
-	RobotsPolicy      string                `toml:"robots"`
-	ExternalLinks     []domain.ExternalLink `toml:"external_links"`
-	PluginsFile       string                `toml:"-"`
+	// Logo is the optional site logo file.
+	Logo string `toml:"logo"`
+	// Favicon is the optional modern favicon file.
+	Favicon string `toml:"favicon"`
+	// FaviconICO is the optional legacy ICO favicon file.
+	FaviconICO string `toml:"favicon_ico"`
+	// AssetsDir is an optional directory copied below the generated assets path.
+	AssetsDir string `toml:"assets_dir"`
+	// SiteName is the title displayed by generated pages.
+	SiteName string `toml:"site_name"`
+	// SiteURL is the published base URL used to derive generated paths and sitemap URLs.
+	SiteURL string `toml:"site_url"`
+	// SourceDir contains Markdown pages and source assets.
+	SourceDir string `toml:"source_dir"`
+	// OutputDir receives the generated static site.
+	OutputDir string `toml:"output_dir"`
+	// Theme selects the initial Kumbuka theme.
+	Theme string `toml:"theme"`
+	// Language becomes the generated HTML content language.
+	Language string `toml:"language"`
+	// NavigationStyle selects the desktop navigation layout.
+	NavigationStyle string `toml:"navigation_style"`
+	// NavigationDensity selects the navigation spacing preset.
+	NavigationDensity string `toml:"navigation_density"`
+	// SidebarWidth is the desktop sidebar width in pixels.
+	SidebarWidth int `toml:"sidebar_width"`
+	// RobotsPolicy controls generated robots.txt content.
+	RobotsPolicy string `toml:"robots"`
+	// ExternalLinks contains configured top-bar links.
+	ExternalLinks []domain.ExternalLink `toml:"external_links"`
+	// PluginsFile is the project dependency file selected outside TOML configuration.
+	PluginsFile string `toml:"-"`
 }
 
 // DefaultConfig returns generic zero-infrastructure static site defaults.

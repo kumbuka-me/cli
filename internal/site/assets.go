@@ -29,9 +29,13 @@ var staticBrowserAssets = []string{
 	"js/features/static-search.js",
 }
 
+// brandingData contains published URLs for configured branding files.
 type brandingData struct {
-	LogoURL       string
-	FaviconURL    string
+	// LogoURL is the generated public logo URL.
+	LogoURL string
+	// FaviconURL is the generated public modern favicon URL.
+	FaviconURL string
+	// FaviconICOURL is the generated public legacy favicon URL.
 	FaviconICOURL string
 }
 

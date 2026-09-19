@@ -20,9 +20,13 @@ import (
 //go:embed templates/*.gohtml
 var templateFiles embed.FS
 
+// siteTemplates contains the parsed templates used by one static build.
 type siteTemplates struct {
-	page     *template.Template
-	search   *template.Template
+	// page renders documentation content pages.
+	page *template.Template
+	// search renders the browser-side search page.
+	search *template.Template
+	// notFound renders the static 404 page.
 	notFound *template.Template
 }
 

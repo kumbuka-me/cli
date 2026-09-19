@@ -28,37 +28,61 @@ type repository interface {
 
 // pageMetadata is the portable sidecar written next to mirrored page content.
 type pageMetadata struct {
-	ID                 int64                 `json:"id"`
-	Slug               string                `json:"slug"`
-	Title              string                `json:"title"`
-	Icon               string                `json:"icon,omitempty"`
-	Language           string                `json:"language,omitempty"`
-	CreatedBy          int64                 `json:"created_by"`
-	UpdatedBy          int64                 `json:"updated_by"`
-	Author             string                `json:"author,omitempty"`
-	CreatedAt          string                `json:"created_at"`
-	UpdatedAt          string                `json:"updated_at"`
-	Tags               []string              `json:"tags,omitempty"`
-	Groups             []domain.Group        `json:"groups,omitempty"`
-	ViewCount          int64                 `json:"view_count"`
-	Status             string                `json:"status"`
-	OwnerGroupID       int64                 `json:"owner_group_id,omitempty"`
-	OwnerGroup         string                `json:"owner_group,omitempty"`
-	LastReviewedAt     string                `json:"last_reviewed_at,omitempty"`
-	ReviewIntervalDays int                   `json:"review_interval_days,omitempty"`
-	DeprecatedTarget   string                `json:"deprecated_target,omitempty"`
-	Properties         []domain.PageProperty `json:"properties,omitempty"`
+	// ID is the stable database page identifier.
+	ID int64 `json:"id"`
+	// Slug is the canonical page path.
+	Slug string `json:"slug"`
+	// Title is the current page title.
+	Title string `json:"title"`
+	// Icon is the optional page icon identifier.
+	Icon string `json:"icon,omitempty"`
+	// Language is the optional page content language.
+	Language string `json:"language,omitempty"`
+	// CreatedBy is the creator user identifier.
+	CreatedBy int64 `json:"created_by"`
+	// UpdatedBy is the most recent editor user identifier.
+	UpdatedBy int64 `json:"updated_by"`
+	// Author is the human-readable author name.
+	Author string `json:"author,omitempty"`
+	// CreatedAt is the UTC creation timestamp.
+	CreatedAt string `json:"created_at"`
+	// UpdatedAt is the UTC last-update timestamp.
+	UpdatedAt string `json:"updated_at"`
+	// Tags contains the page tags.
+	Tags []string `json:"tags,omitempty"`
+	// Groups contains page visibility groups.
+	Groups []domain.Group `json:"groups,omitempty"`
+	// ViewCount is the persisted page view count.
+	ViewCount int64 `json:"view_count"`
+	// Status is the current page lifecycle status.
+	Status string `json:"status"`
+	// OwnerGroupID is the optional owning group identifier.
+	OwnerGroupID int64 `json:"owner_group_id,omitempty"`
+	// OwnerGroup is the optional owning group name.
+	OwnerGroup string `json:"owner_group,omitempty"`
+	// LastReviewedAt is the optional UTC review timestamp.
+	LastReviewedAt string `json:"last_reviewed_at,omitempty"`
+	// ReviewIntervalDays is the configured review cadence.
+	ReviewIntervalDays int `json:"review_interval_days,omitempty"`
+	// DeprecatedTarget is the replacement page for deprecated content.
+	DeprecatedTarget string `json:"deprecated_target,omitempty"`
+	// Properties contains structured page metadata.
+	Properties []domain.PageProperty `json:"properties,omitempty"`
 }
 
 // manifest describes the stable mirror format and exported object inventory.
 type manifest struct {
-	Format      int      `json:"format"`
-	Pages       []string `json:"pages"`
-	Images      []int64  `json:"images,omitempty"`
-	Attachments []int64  `json:"attachments,omitempty"`
+	// Format identifies the mirror schema version.
+	Format int `json:"format"`
+	// Pages lists exported page slugs in deterministic order.
+	Pages []string `json:"pages"`
+	// Images lists exported image identifiers in deterministic order.
+	Images []int64 `json:"images,omitempty"`
+	// Attachments lists exported attachment identifiers in deterministic order.
+	Attachments []int64 `json:"attachments,omitempty"`
 }
 
-// Export writes repository content atomically into outputDir.
+// Export stages a complete repository snapshot before replacing outputDir.
 func Export(ctx context.Context, repository repository, outputDir string) error {
 	if err := validateOutputDir(outputDir); err != nil {
 		return err
