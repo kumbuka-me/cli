@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
+	"github.com/kumbuka-me/kumbuka/pkg/icons"
 )
 
 //go:embed templates/*.gohtml
@@ -26,18 +27,18 @@ type siteTemplates struct {
 }
 
 // parseTemplates parses every static page template against the shared layout and helpers.
-func (b *builder) parseTemplates(basePath string) (siteTemplates, error) {
-	page, err := b.parseTemplate("page.gohtml", basePath)
+func parseTemplates(basePath string, iconCatalog *icons.Catalog) (siteTemplates, error) {
+	page, err := parseTemplate("page.gohtml", basePath, iconCatalog)
 	if err != nil {
 		return siteTemplates{}, err
 	}
 
-	search, err := b.parseTemplate("search.gohtml", basePath)
+	search, err := parseTemplate("search.gohtml", basePath, iconCatalog)
 	if err != nil {
 		return siteTemplates{}, err
 	}
 
-	notFound, err := b.parseTemplate("not_found.gohtml", basePath)
+	notFound, err := parseTemplate("not_found.gohtml", basePath, iconCatalog)
 	if err != nil {
 		return siteTemplates{}, err
 	}
@@ -46,9 +47,9 @@ func (b *builder) parseTemplates(basePath string) (siteTemplates, error) {
 }
 
 // parseTemplate parses one static page template with URL and icon helpers.
-func (b *builder) parseTemplate(pageTemplate, basePath string) (*template.Template, error) {
+func parseTemplate(pageTemplate, basePath string, iconCatalog *icons.Catalog) (*template.Template, error) {
 	funcs := template.FuncMap{
-		"icon":          b.iconCatalog.SVG,
+		"icon":          iconCatalog.SVG,
 		"externalhover": domain.ExternalLinkHoverTitle,
 		"externalhovereffect": func(link domain.ExternalLink) string {
 			return domain.EffectiveExternalLinkHoverEffect(link.HoverEffect)

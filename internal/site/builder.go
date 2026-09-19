@@ -19,9 +19,8 @@ import (
 
 // builder converts Markdown files into one read-only static site.
 type builder struct {
-	appFS       fs.FS
-	renderer    *md.Renderer
-	iconCatalog *icons.Catalog
+	appFS    fs.FS
+	renderer *md.Renderer
 }
 
 // buildResult summarizes one completed static build.
@@ -82,7 +81,6 @@ type buildPlan struct {
 	navigationPages []navigation.Page
 	navigationTree  []navigation.Node
 	themeData       template.JS
-	templates       siteTemplates
 }
 
 // renderedPage contains one processed page body plus search and contents data.
@@ -94,10 +92,7 @@ type renderedPage struct {
 
 // newBuilder constructs the filesystem-backed static site builder.
 func newBuilder(appFS fs.FS) *builder {
-	return &builder{
-		appFS:       appFS,
-		iconCatalog: icons.Builtin(),
-	}
+	return &builder{appFS: appFS}
 }
 
 // build renders all configured Markdown files into staged output and replaces the destination after a complete build.
@@ -130,55 +125,65 @@ func (b *builder) build(ctx context.Context, config Config) (buildResult, error)
 
 // buildInto renders one site into an empty staging directory.
 func (b *builder) buildInto(ctx context.Context, config Config) (buildResult, error) {
-	// Copy the builder so a scoped project renderer is never retained after close.
-	local := *b
-	b = &local
-	plan, err := b.planBuild(config)
+	plan, err := planBuild(config)
 	if err != nil {
 		return buildResult{}, err
 	}
-	if b.renderer == nil {
-		renderer, err := projectRenderer(ctx, config.PluginsFile, plan.pages)
-		if err != nil {
-			return buildResult{}, err
-		}
+
+	renderer, owned, err := b.rendererForBuild(ctx, config.PluginsFile, plan.pages)
+	if err != nil {
+		return buildResult{}, err
+	}
+	if owned {
 		defer func() { _ = renderer.Close(context.Background()) }()
-		b.renderer = renderer
 	}
 
-	b.iconCatalog = b.renderer.IconCatalog()
-	if err := validateExternalLinkIcons(plan.config.ExternalLinks, b.iconCatalog); err != nil {
+	iconCatalog := renderer.IconCatalog()
+	if err := validateExternalLinkIcons(plan.config.ExternalLinks, iconCatalog); err != nil {
 		return buildResult{}, err
 	}
-	plan.templates, err = b.parseTemplates(plan.basePath)
+	templates, err := parseTemplates(plan.basePath, iconCatalog)
 	if err != nil {
 		return buildResult{}, err
 	}
 
-	branding, err := b.prepareOutput(plan.config, plan.basePath)
+	branding, err := b.prepareOutput(plan.config, plan.basePath, renderer)
 	if err != nil {
 		return buildResult{}, err
 	}
-	pluginModules, err := b.pluginModulesJSON(plan.basePath + "plugins")
+	pluginModules, err := pluginModulesJSON(renderer, plan.basePath+"plugins")
 	if err != nil {
 		return buildResult{}, err
 	}
 
 	common := commonViewData(plan, branding)
 	common.PluginModules = pluginModules
-	searchIndex, err := b.renderPages(ctx, plan, common)
+	searchIndex, err := renderPages(ctx, renderer, iconCatalog, templates, plan, common)
 	if err != nil {
 		return buildResult{}, err
 	}
-	if err := b.writeSupportFiles(plan, common, searchIndex); err != nil {
+	if err := writeSupportFiles(templates, plan, common, searchIndex); err != nil {
 		return buildResult{}, err
 	}
 
 	return buildResult{pages: len(plan.pages), outputDir: plan.config.OutputDir}, nil
 }
 
-// planBuild validates configuration and prepares immutable state used by rendering.
-func (b *builder) planBuild(config Config) (buildPlan, error) {
+// rendererForBuild returns the injected renderer or creates a project-scoped renderer owned by this build.
+func (b *builder) rendererForBuild(ctx context.Context, filename string, pages []sourcePage) (*md.Renderer, bool, error) {
+	if b.renderer != nil {
+		return b.renderer, false, nil
+	}
+
+	renderer, err := projectRenderer(ctx, filename, pages)
+	if err != nil {
+		return nil, false, err
+	}
+	return renderer, true, nil
+}
+
+// planBuild prepares immutable state used by rendering after configuration validation has completed.
+func planBuild(config Config) (buildPlan, error) {
 	themeData, err := loadThemeData(config.Theme)
 	if err != nil {
 		return buildPlan{}, err
@@ -202,11 +207,6 @@ func (b *builder) planBuild(config Config) (buildPlan, error) {
 
 	routesBySource, wikiTargets := indexPages(pages)
 	navigationPages := buildNavigationPages(pages)
-	templates, err := b.parseTemplates(basePath)
-	if err != nil {
-		return buildPlan{}, err
-	}
-
 	return buildPlan{
 		config:          config,
 		basePath:        basePath,
@@ -216,7 +216,6 @@ func (b *builder) planBuild(config Config) (buildPlan, error) {
 		navigationPages: navigationPages,
 		navigationTree:  navigation.Build(navigationPages, navigation.Options{}),
 		themeData:       themeData,
-		templates:       templates,
 	}, nil
 }
 
@@ -271,7 +270,14 @@ func commonViewData(plan buildPlan, branding brandingData) viewData {
 }
 
 // renderPages renders each discovered source page and builds the static search index.
-func (b *builder) renderPages(ctx context.Context, plan buildPlan, common viewData) ([]searchEntry, error) {
+func renderPages(
+	ctx context.Context,
+	renderer *md.Renderer,
+	iconCatalog *icons.Catalog,
+	templates siteTemplates,
+	plan buildPlan,
+	common viewData,
+) ([]searchEntry, error) {
 	searchIndex := make([]searchEntry, 0, len(plan.pages))
 	for index := range plan.pages {
 		if err := ctx.Err(); err != nil {
@@ -283,7 +289,7 @@ func (b *builder) renderPages(ctx context.Context, plan buildPlan, common viewDa
 			return nil, err
 		}
 
-		rendered, err := b.renderPage(ctx, *page, plan)
+		rendered, err := renderPage(ctx, renderer, iconCatalog, *page, plan)
 		if err != nil {
 			return nil, err
 		}
@@ -292,7 +298,7 @@ func (b *builder) renderPages(ctx context.Context, plan buildPlan, common viewDa
 		page.Contents = rendered.contents
 
 		data := pageViewData(common, *page, plan.navigationPages)
-		if err := writeTemplate(plan.templates.page, outputFilename(plan.config.OutputDir, page.Route), data); err != nil {
+		if err := writeTemplate(templates.page, outputFilename(plan.config.OutputDir, page.Route), data); err != nil {
 			return nil, err
 		}
 
@@ -307,7 +313,13 @@ func (b *builder) renderPages(ctx context.Context, plan buildPlan, common viewDa
 }
 
 // renderPage renders one source page with shared Markdown functions and static URL rewriting.
-func (b *builder) renderPage(ctx context.Context, page sourcePage, plan buildPlan) (renderedPage, error) {
+func renderPage(
+	ctx context.Context,
+	renderer *md.Renderer,
+	iconCatalog *icons.Catalog,
+	page sourcePage,
+	plan buildPlan,
+) (renderedPage, error) {
 	options := md.DefaultOptions()
 	options.WikiLinkPrefix = plan.basePath
 	resolveWiki := func(target string) string {
@@ -325,11 +337,11 @@ func (b *builder) renderPage(ctx context.Context, page sourcePage, plan buildPla
 	pageNavigation := plugincap.Navigation(children, func(slug string) string {
 		return pageURL(plan.basePath, slug)
 	})
-	rendered, err := b.renderer.RenderPageResolvedWithFunctions(
+	rendered, err := renderer.RenderPageResolvedWithFunctions(
 		page.Markdown,
 		resolveWiki,
 		options,
-		md.Functions{Context: ctx, Capabilities: plugincap.Capabilities(nil, pageNavigation, b.iconCatalog)},
+		md.Functions{Context: ctx, Capabilities: plugincap.Capabilities(nil, pageNavigation, iconCatalog)},
 	)
 	if err != nil {
 		return renderedPage{}, fmt.Errorf("render %s: %w", page.SourcePath, err)
@@ -369,15 +381,15 @@ func pageViewData(common viewData, page sourcePage, navigationPages []navigation
 }
 
 // writeSupportFiles writes the static search page, error page, search index, and sitemap.
-func (b *builder) writeSupportFiles(plan buildPlan, common viewData, searchIndex []searchEntry) error {
+func writeSupportFiles(templates siteTemplates, plan buildPlan, common viewData, searchIndex []searchEntry) error {
 	slices.SortFunc(searchIndex, compareSearchEntries)
 	if err := writeJSON(outputFile(plan.config.OutputDir, "search-index.json"), searchIndex); err != nil {
 		return err
 	}
-	if err := writeSearchPage(plan, common); err != nil {
+	if err := writeSearchPage(templates.search, plan, common); err != nil {
 		return err
 	}
-	if err := writeNotFoundPage(plan, common); err != nil {
+	if err := writeNotFoundPage(templates.notFound, plan, common); err != nil {
 		return err
 	}
 	if err := writeSitemap(plan.config, plan.pages); err != nil {
@@ -387,19 +399,19 @@ func (b *builder) writeSupportFiles(plan buildPlan, common viewData, searchIndex
 }
 
 // writeSearchPage renders the browser-side static search page.
-func writeSearchPage(plan buildPlan, common viewData) error {
+func writeSearchPage(tmpl *template.Template, plan buildPlan, common viewData) error {
 	data := common
 	data.Title = "Search"
 	data.Navigation = navigation.Build(plan.navigationPages, navigation.Options{})
-	return writeTemplate(plan.templates.search, outputFile(plan.config.OutputDir, "search", "index.html"), data)
+	return writeTemplate(tmpl, outputFile(plan.config.OutputDir, "search", "index.html"), data)
 }
 
 // writeNotFoundPage renders the static 404 page.
-func writeNotFoundPage(plan buildPlan, common viewData) error {
+func writeNotFoundPage(tmpl *template.Template, plan buildPlan, common viewData) error {
 	data := common
 	data.Title = "Page not found"
 	data.Navigation = navigation.Build(plan.navigationPages, navigation.Options{})
-	return writeTemplate(plan.templates.notFound, outputFile(plan.config.OutputDir, "404.html"), data)
+	return writeTemplate(tmpl, outputFile(plan.config.OutputDir, "404.html"), data)
 }
 
 // BuildWithRenderer lets an application build a site using its active plugin
