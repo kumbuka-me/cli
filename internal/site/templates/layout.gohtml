@@ -94,10 +94,6 @@
               {{ range .Navigation }}{{ template "nav-entry" . }}{{ end }}
             </div>
           </nav>
-          <div class="static-sidebar-footer">
-            <span>{{ icon "book-open-lucide" 14 }}</span>
-            <span>Read-only static site</span>
-          </div>
         </aside>
         <button class="sidebar-backdrop"
                 type="button"
@@ -118,9 +114,9 @@
           {{ template "content" . }}
         </main>
       </div>
-      <footer>
-        {{ .SiteName }}
-      </footer>
+      {{ if .Footer }}
+        <footer>{{ .Footer }}</footer>
+      {{ end }}
     </body>
   </html>
 {{ end }}

@@ -7669,19 +7669,6 @@ body.editor-focus-mode {
   max-width: 720px;
 }
 
-.static-sidebar-footer {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 12px 10px 2px;
-  color: var(--text-tertiary);
-  font-size: 12px;
-}
-
-.static-sidebar-footer svg {
-  flex: 0 0 auto;
-}
-
 .static-search-results .page-row {
   grid-template-columns: minmax(0, 1fr);
   gap: 3px;
@@ -12627,4 +12614,3 @@ body.editor-focus-mode {
     color: #555 !important;
   }
 }
-

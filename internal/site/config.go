@@ -26,6 +26,8 @@ type Config struct {
 	AssetsDir string `toml:"assets_dir"`
 	// SiteName is the title displayed by generated pages.
 	SiteName string `toml:"site_name"`
+	// Footer is optional plain text displayed below generated pages.
+	Footer string `toml:"footer"`
 	// SiteURL is the published base URL used to derive generated paths and sitemap URLs.
 	SiteURL string `toml:"site_url"`
 	// SourceDir contains Markdown pages and source assets.

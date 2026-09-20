@@ -15,6 +15,7 @@ import (
 
 // normalizeConfig returns a build configuration with canonical plugin-independent presentation values.
 func normalizeConfig(config Config) Config {
+	config.Footer = strings.TrimSpace(config.Footer)
 	config.ExternalLinks = normalizeExternalLinks(config.ExternalLinks)
 	return config
 }

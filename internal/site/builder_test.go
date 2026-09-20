@@ -208,6 +208,7 @@ func TestBuilderBuildsReadOnlyStaticSite(t *testing.T) {
 	config.NavigationStyle = domain.NavigationStyleTopbar
 	config.NavigationDensity = domain.NavigationDensityCompact
 	config.SidebarWidth = 360
+	config.Footer = "Kumbuka documentation"
 	config.ExternalLinks = []domain.ExternalLink{{
 		Label:       "Repository",
 		URL:         "https://github.com/kumbuka-me/kumbuka",
@@ -228,7 +229,8 @@ func TestBuilderBuildsReadOnlyStaticSite(t *testing.T) {
 	require.NoError(t, err)
 	assert.Contains(t, string(home), `href="/docs/guide/"`)
 	assert.Contains(t, string(home), `src="/docs/images/logo.png"`)
-	assert.Contains(t, string(home), "Read-only static site")
+	assert.NotContains(t, string(home), "Read-only static site")
+	assert.Contains(t, string(home), "<footer>Kumbuka documentation</footer>")
 	assert.Contains(t, string(home), `data-navigation-style="topbar"`)
 	assert.Contains(t, string(home), `data-navigation-density="compact"`)
 	assert.Contains(t, string(home), `style="--sidebar: 360px"`)

@@ -63,3 +63,46 @@ func TestExpandContentWhenHiddenReachesStaticLayout(t *testing.T) {
 	assert.Contains(t, string(stylesheet), `data-expand-content-when-hidden="true"`)
 	assert.Contains(t, staticBrowserAssets, "css/static-layout.css")
 }
+
+func TestFooterReachesStaticLayout(t *testing.T) {
+	t.Parallel()
+
+	t.Run("renders configured plain text", func(t *testing.T) {
+		t.Parallel()
+
+		config := defaultConfig()
+		config.Footer = `Built with <Kumbuka>`
+		common := commonViewData(buildPlan{config: config, basePath: "/"}, brandingData{})
+
+		templates, err := parseTemplates("/", icons.Builtin())
+		require.NoError(t, err)
+
+		common.Language = "en"
+		common.Title = "Home"
+		common.SiteName = "Documentation"
+		common.ActiveTheme = "system"
+
+		var output bytes.Buffer
+		require.NoError(t, templates.page.ExecuteTemplate(&output, "layout", common))
+		assert.Contains(t, output.String(), "<footer>Built with &lt;Kumbuka&gt;</footer>")
+	})
+
+	t.Run("omits footer when not configured", func(t *testing.T) {
+		t.Parallel()
+
+		config := defaultConfig()
+		common := commonViewData(buildPlan{config: config, basePath: "/"}, brandingData{})
+
+		templates, err := parseTemplates("/", icons.Builtin())
+		require.NoError(t, err)
+
+		common.Language = "en"
+		common.Title = "Home"
+		common.SiteName = "Documentation"
+		common.ActiveTheme = "system"
+
+		var output bytes.Buffer
+		require.NoError(t, templates.page.ExecuteTemplate(&output, "layout", common))
+		assert.NotContains(t, output.String(), "<footer>")
+	})
+}

@@ -73,6 +73,8 @@ type viewData struct {
 	FaviconICOURL string
 	// SiteName is the configured documentation title.
 	SiteName string
+	// Footer is optional plain text displayed below generated pages.
+	Footer string
 	// SiteURL is the configured published site URL.
 	SiteURL string
 	// BasePath is the normalized public URL prefix.
@@ -304,6 +306,7 @@ func commonViewData(plan buildPlan, branding brandingData) viewData {
 		FaviconURL:              branding.FaviconURL,
 		FaviconICOURL:           branding.FaviconICOURL,
 		SiteName:                plan.config.SiteName,
+		Footer:                  plan.config.Footer,
 		SiteURL:                 plan.config.SiteURL,
 		BasePath:                plan.basePath,
 		Language:                plan.config.Language,

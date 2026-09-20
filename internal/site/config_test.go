@@ -164,6 +164,7 @@ func TestDefaultConfigUsesGenericBranding(t *testing.T) {
 	config := defaultConfig()
 
 	assert.Equal(t, "Documentation", config.SiteName)
+	assert.Empty(t, config.Footer)
 	assert.Empty(t, config.Logo)
 	assert.Empty(t, config.Favicon)
 	assert.Empty(t, config.FaviconICO)
@@ -171,6 +172,19 @@ func TestDefaultConfigUsesGenericBranding(t *testing.T) {
 	assert.Equal(t, domain.NavigationDensityComfortable, config.NavigationDensity)
 	assert.Equal(t, domain.DefaultSidebarWidth, config.SidebarWidth)
 	assert.Equal(t, domain.RobotsPolicyAllow, config.RobotsPolicy)
+}
+
+func TestFooterConfiguration(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	filename := filepath.Join(root, "site.toml")
+	require.NoError(t, os.WriteFile(filename, []byte(`footer = "  Built with Kumbuka  "`), 0o600))
+
+	config, err := loadConfig(filename, true)
+
+	require.NoError(t, err)
+	assert.Equal(t, "Built with Kumbuka", config.Footer)
 }
 
 func TestNavigationPresentationConfiguration(t *testing.T) {
