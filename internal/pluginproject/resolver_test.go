@@ -145,3 +145,59 @@ func TestResolverCacheFilenameUsesFullRepositoryDigest(t *testing.T) {
 
 	assert.Len(t, digestDirectory, sha256.Size*2)
 }
+
+func TestResolvedPackageDowngradesAdminOnlyListFieldsForStaticRuntime(t *testing.T) {
+	t.Parallel()
+
+	var output bytes.Buffer
+	writer := zip.NewWriter(&output)
+	manifest := `api_version: 1
+id: com.example.status
+name: Status
+version: 1.0.0
+default_enabled: true
+modules:
+  - type: admin-resource
+    id: sets
+    name: Sets
+    fields:
+      - id: name
+        name: Name
+        type: text
+        required: true
+        key: true
+      - id: statuses
+        name: Statuses
+        type: list
+        required: true
+        max_items: 16
+        columns:
+          - id: label
+            name: Status
+            type: text
+          - id: color
+            name: Color
+            type: color
+  - type: markdown-syntax
+    id: syntax
+    syntax: strikethrough
+permissions: []
+`
+	for name, data := range map[string][]byte{
+		"README.md":   []byte("# Status\n"),
+		"plugin.yaml": []byte(manifest),
+	} {
+		entry, err := writer.Create(name)
+		require.NoError(t, err)
+		_, err = entry.Write(data)
+		require.NoError(t, err)
+	}
+	require.NoError(t, writer.Close())
+
+	dependency := Dependency{ID: "com.example.status", Version: "1.0.0"}
+	resolved, err := resolvedPackage(dependency, output.Bytes())
+	require.NoError(t, err)
+	require.Len(t, resolved.Manifest.Modules, 2)
+	require.Len(t, resolved.Manifest.Modules[0].Fields, 2)
+	assert.Equal(t, "textarea", resolved.Manifest.Modules[0].Fields[1].Type)
+}
