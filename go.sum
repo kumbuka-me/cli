@@ -19,6 +19,8 @@ github.com/kumbuka-me/kumbuka v0.18.0 h1:W8oeEGhHJrz0c3wayxLrMffelTGXtb0ohPjGIuK
 github.com/kumbuka-me/kumbuka v0.18.0/go.mod h1:47mBVlKKGFqeVwEum8R25i13BO8vmYma3RWkF1UqpE8=
 github.com/kumbuka-me/kumbuka v0.19.0 h1:B82nTHjzEJNt9djhZARlQDiBZt16ZYWTndhLkOuwo1g=
 github.com/kumbuka-me/kumbuka v0.19.0/go.mod h1:47mBVlKKGFqeVwEum8R25i13BO8vmYma3RWkF1UqpE8=
+github.com/kumbuka-me/kumbuka v0.20.1 h1:9NaIJ0RTJSMnJvGOs4Agb87ABSiCKBRUGfq3wb4UrOg=
+github.com/kumbuka-me/kumbuka v0.20.1/go.mod h1:47mBVlKKGFqeVwEum8R25i13BO8vmYma3RWkF1UqpE8=
 github.com/kumbuka-me/sdk v0.11.0 h1:9hpkAdd+mZ2YGq88JZqWbumM4bD+qL4Ne6zweXE+7vc=
 github.com/kumbuka-me/sdk v0.11.0/go.mod h1:c9uIQ2XOV1WeEOct9NrfOFwXSDnHF1e7cM4sxlJFvwI=
 github.com/kumbuka-me/sdk v0.13.0 h1:SODnQ4dWJ+GRDg6jThAa14SRMSbcCLnNekoTusTfaVg=
