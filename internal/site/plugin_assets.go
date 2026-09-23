@@ -20,8 +20,8 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 	if err != nil {
 		return err
 	}
-	prefix := basePath + "plugins"
-	runtime := basePath + "assets/js/plugins/frame.js"
+	prefix := publicURLPath(basePath, "plugins")
+	runtime := publicURLPath(basePath, "assets/js/plugins/frame.js")
 	for _, module := range manager.BrowserModules() {
 		names, err := manager.BrowserAssetNames(module.PluginID, module.Digest)
 		if err != nil {

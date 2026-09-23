@@ -93,6 +93,22 @@ func TestStaticBasePath(t *testing.T) {
 	assert.Equal(t, "/kumbuka/", project)
 }
 
+func TestPageURL(t *testing.T) {
+	t.Parallel()
+
+	t.Run("escapes route characters without escaping separators", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, "/docs/guide%20%231/", pageURL("/docs/", "guide #1"))
+	})
+
+	t.Run("escapes configured base path", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, "/team%20docs/guide/", pageURL("/team docs/", "guide"))
+	})
+}
+
 func TestRewriteLocalURL(t *testing.T) {
 	t.Parallel()
 
@@ -109,6 +125,11 @@ func TestRewriteLocalURL(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, "/kumbuka/guide/images/example.png", asset)
+
+	prefixed, err := rewriteLocalURL("/kumbuka/guide/page #1/", "guide/page.md", routes, "/kumbuka/")
+
+	require.NoError(t, err)
+	assert.Equal(t, "/kumbuka/guide/page%20%231/", prefixed)
 
 	_, err = rewriteLocalURL("missing.md", "guide/page.md", routes, "/kumbuka/")
 

@@ -150,7 +150,7 @@ func publishBranding(config Config, basePath string) (brandingData, error) {
 		return brandingData{}, fmt.Errorf("publish logo: %w", err)
 	}
 	if logoURL != "" {
-		branding.LogoURL = basePath + logoURL
+		branding.LogoURL = publicURLPath(basePath, logoURL)
 	}
 
 	faviconURL, err := publishConfiguredFile(config, config.Favicon)
@@ -158,7 +158,7 @@ func publishBranding(config Config, basePath string) (brandingData, error) {
 		return brandingData{}, fmt.Errorf("publish favicon: %w", err)
 	}
 	if faviconURL != "" {
-		branding.FaviconURL = basePath + faviconURL
+		branding.FaviconURL = publicURLPath(basePath, faviconURL)
 	}
 
 	faviconICOURL, err := publishConfiguredFile(config, config.FaviconICO)
@@ -166,7 +166,7 @@ func publishBranding(config Config, basePath string) (brandingData, error) {
 		return brandingData{}, fmt.Errorf("publish favicon_ico: %w", err)
 	}
 	if faviconICOURL != "" {
-		branding.FaviconICOURL = basePath + faviconICOURL
+		branding.FaviconICOURL = publicURLPath(basePath, faviconICOURL)
 	}
 
 	return branding, nil

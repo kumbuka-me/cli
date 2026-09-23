@@ -62,10 +62,10 @@ func parseTemplate(pageTemplate, basePath string, iconCatalog *icons.Catalog) (*
 			return pageURL(basePath, route)
 		},
 		"asseturl": func(name string) string {
-			return basePath + "assets/" + strings.TrimPrefix(name, "/")
+			return publicURLPath(basePath, "assets/"+strings.TrimPrefix(name, "/"))
 		},
 		"searchurl": func() string {
-			return basePath + "search/"
+			return publicURLPath(basePath, "search/")
 		},
 	}
 
@@ -104,15 +104,20 @@ func staticBasePath(siteURL string) (string, error) {
 	return strings.TrimSuffix(cleaned, "/") + "/", nil
 }
 
-// pageURL returns the clean public URL for one generated page route.
+// pageURL returns the escaped public URL path for one generated page route.
 func pageURL(basePath, route string) string {
-	basePath = ensureBasePath(basePath)
 	route = strings.Trim(route, "/")
 	if route == "" {
-		return basePath
+		return publicURLPath(basePath, "")
 	}
 
-	return basePath + route + "/"
+	return publicURLPath(basePath, route+"/")
+}
+
+// publicURLPath joins a raw site base path and suffix and URL-escapes path characters without escaping separators.
+func publicURLPath(basePath, suffix string) string {
+	pathname := ensureBasePath(basePath) + strings.TrimPrefix(suffix, "/")
+	return (&url.URL{Path: pathname}).EscapedPath()
 }
 
 // ensureBasePath normalizes a URL prefix to one leading and trailing slash.

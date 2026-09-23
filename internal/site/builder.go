@@ -200,7 +200,7 @@ func (b *builder) buildInto(ctx context.Context, config Config) (buildResult, er
 	if err != nil {
 		return buildResult{}, err
 	}
-	pluginModules, err := pluginModulesJSON(renderer, plan.basePath+"plugins")
+	pluginModules, err := pluginModulesJSON(renderer, publicURLPath(plan.basePath, "plugins"))
 	if err != nil {
 		return buildResult{}, err
 	}

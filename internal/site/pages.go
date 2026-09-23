@@ -451,7 +451,7 @@ func rewriteLocalURL(value, sourcePath string, routesBySource map[string]string,
 
 	basePath = ensureBasePath(basePath)
 	if basePath != "/" && strings.HasPrefix(parsed.Path, basePath) {
-		return value, nil
+		return parsed.String(), nil
 	}
 
 	trailingSlash := strings.HasSuffix(parsed.Path, "/")
