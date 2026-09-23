@@ -9,9 +9,7 @@ import (
 	"github.com/kumbuka-me/sdk/pluginpackage"
 )
 
-// projectRenderer resolves declared project packages without starting their
-// runtimes, selects only packages that can affect the discovered Markdown, then
-// creates a renderer from that minimal package set.
+// projectRenderer resolves and selects only project plugins required by the discovered Markdown.
 func projectRenderer(ctx context.Context, filename string, pages []sourcePage) (*md.Renderer, error) {
 	file, err := pluginproject.Load(filename)
 	if err != nil {
@@ -30,25 +28,41 @@ func projectRenderer(ctx context.Context, filename string, pages []sourcePage) (
 		return nil, fmt.Errorf("resolve %s: %w", filename, err)
 	}
 
-	manifests := make([]pluginpackage.Manifest, 0, len(resolved))
-	for _, item := range resolved {
-		manifests = append(manifests, item.Manifest)
-	}
-	sources := make([]string, 0, len(pages))
-	for _, page := range pages {
-		sources = append(sources, page.Markdown)
-	}
-	required := md.RequiredPluginIDs(sources, manifests)
+	required := md.RequiredPluginIDs(pageMarkdownSources(pages), resolvedManifests(resolved))
 	selected, err := pluginproject.Select(resolved, required)
 	if err != nil {
 		return nil, err
 	}
 
+	archives, ids := pluginPackageInputs(selected)
+	return md.NewWithPluginPackages(ctx, archives, ids)
+}
+
+// resolvedManifests extracts validated manifests from resolved project plugins.
+func resolvedManifests(resolved []pluginproject.Resolved) []pluginpackage.Manifest {
+	manifests := make([]pluginpackage.Manifest, 0, len(resolved))
+	for _, item := range resolved {
+		manifests = append(manifests, item.Manifest)
+	}
+	return manifests
+}
+
+// pageMarkdownSources extracts Markdown source text from discovered static pages.
+func pageMarkdownSources(pages []sourcePage) []string {
+	sources := make([]string, 0, len(pages))
+	for _, page := range pages {
+		sources = append(sources, page.Markdown)
+	}
+	return sources
+}
+
+// pluginPackageInputs extracts package archives and matching manifest IDs in the same order.
+func pluginPackageInputs(selected []pluginproject.Resolved) ([][]byte, []string) {
 	archives := make([][]byte, 0, len(selected))
 	ids := make([]string, 0, len(selected))
 	for _, item := range selected {
 		archives = append(archives, item.Archive)
 		ids = append(ids, item.Manifest.ID)
 	}
-	return md.NewWithPluginPackages(ctx, archives, ids)
+	return archives, ids
 }
