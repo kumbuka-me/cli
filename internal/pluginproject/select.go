@@ -6,6 +6,16 @@ import (
 	"strings"
 )
 
+// ValidateGraph verifies that every resolved package dependency is declared and acyclic.
+func ValidateGraph(packages []Resolved) error {
+	ids := make([]string, 0, len(packages))
+	for _, item := range packages {
+		ids = append(ids, item.Manifest.ID)
+	}
+	_, err := Select(packages, ids)
+	return err
+}
+
 // Select returns requested plugins and their transitive manifest dependencies.
 func Select(packages []Resolved, ids []string) ([]Resolved, error) {
 	catalog := make(map[string]Resolved, len(packages))

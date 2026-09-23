@@ -21,3 +21,26 @@ func TestSelectIncludesTransitiveDependencies(t *testing.T) {
 	assert.Equal(t, "io.base", selected[0].Manifest.ID)
 	assert.Equal(t, "io.child", selected[1].Manifest.ID)
 }
+
+func TestValidateGraphRejectsMissingDependency(t *testing.T) {
+	t.Parallel()
+
+	packages := []Resolved{{Manifest: pluginpackage.Manifest{ID: "io.child", Requires: []string{"io.base"}}}}
+
+	err := ValidateGraph(packages)
+
+	require.ErrorContains(t, err, "required plugin io.base is not declared")
+}
+
+func TestValidateGraphRejectsDependencyCycle(t *testing.T) {
+	t.Parallel()
+
+	packages := []Resolved{
+		{Manifest: pluginpackage.Manifest{ID: "io.one", Requires: []string{"io.two"}}},
+		{Manifest: pluginpackage.Manifest{ID: "io.two", Requires: []string{"io.one"}}},
+	}
+
+	err := ValidateGraph(packages)
+
+	require.ErrorContains(t, err, "dependency cycle")
+}

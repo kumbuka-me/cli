@@ -24,6 +24,9 @@ func RunSync(ctx context.Context, cfg SyncConfig, stdout io.Writer) error {
 	if err != nil {
 		return err
 	}
+	if err := pluginproject.ValidateGraph(resolved); err != nil {
+		return err
+	}
 
 	if _, err := fmt.Fprintf(stdout, "Synced %d plugins from %s\n", len(resolved), cfg.File); err != nil {
 		return fmt.Errorf("write sync result: %w", err)
