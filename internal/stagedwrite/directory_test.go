@@ -66,6 +66,31 @@ func TestReplaceDirectoryCreatesMissingParents(t *testing.T) {
 	assert.Equal(t, "new", string(data))
 }
 
+func TestReplaceDirectoryRejectsCurrentWorkingDirectoryAncestor(t *testing.T) {
+	current, err := os.Getwd()
+	require.NoError(t, err)
+
+	called := false
+	err = ReplaceDirectory(filepath.Dir(current), func(string) error {
+		called = true
+		return nil
+	})
+
+	require.ErrorContains(t, err, "cannot contain the current working directory")
+	assert.False(t, called)
+}
+
+func TestReplaceDirectoryRejectsEmptyTarget(t *testing.T) {
+	called := false
+	err := ReplaceDirectory("", func(string) error {
+		called = true
+		return nil
+	})
+
+	require.ErrorContains(t, err, "target directory is required")
+	assert.False(t, called)
+}
+
 func TestReplaceDirectoryRejectsFileTarget(t *testing.T) {
 	t.Parallel()
 	parent := t.TempDir()

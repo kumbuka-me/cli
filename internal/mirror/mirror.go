@@ -321,24 +321,5 @@ func validateOutputDir(outputDir string) error {
 	if strings.TrimSpace(outputDir) == "" {
 		return errors.New("mirror output directory is required")
 	}
-	absolute, err := filepath.Abs(outputDir)
-	if err != nil {
-		return err
-	}
-	root := filepath.VolumeName(absolute) + string(filepath.Separator)
-	if absolute == root {
-		return errors.New("mirror output directory cannot be a filesystem root")
-	}
-	current, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	current, err = filepath.Abs(current)
-	if err != nil {
-		return err
-	}
-	if absolute == current {
-		return errors.New("mirror output directory cannot be the current working directory")
-	}
 	return nil
 }

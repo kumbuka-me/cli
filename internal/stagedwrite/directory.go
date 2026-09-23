@@ -6,10 +6,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // ReplaceDirectory populates a temporary sibling directory and replaces target only after populate succeeds.
 func ReplaceDirectory(target string, populate func(string) error) error {
+	if err := validateReplacementTarget(target); err != nil {
+		return err
+	}
+
 	parent := filepath.Dir(target)
 	if err := os.MkdirAll(parent, 0o755); err != nil {
 		return fmt.Errorf("create output parent %s: %w", parent, err)
@@ -26,6 +31,40 @@ func ReplaceDirectory(target string, populate func(string) error) error {
 	}
 
 	return replaceDirectory(staging, target)
+}
+
+// validateReplacementTarget rejects empty paths and directories containing the current working directory.
+func validateReplacementTarget(target string) error {
+	if strings.TrimSpace(target) == "" {
+		return errors.New("replacement target directory is required")
+	}
+
+	absolute, err := filepath.Abs(target)
+	if err != nil {
+		return err
+	}
+	current, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	current, err = filepath.Abs(current)
+	if err != nil {
+		return err
+	}
+
+	if directoryContains(absolute, current) {
+		return fmt.Errorf("replacement target %s cannot contain the current working directory", target)
+	}
+	return nil
+}
+
+// directoryContains reports whether child is equal to or nested below parent.
+func directoryContains(parent, child string) bool {
+	relative, err := filepath.Rel(parent, child)
+	if err != nil {
+		return false
+	}
+	return relative == "." || (relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)))
 }
 
 // replaceDirectory swaps one prepared directory into place and restores the previous target if the final rename fails.
