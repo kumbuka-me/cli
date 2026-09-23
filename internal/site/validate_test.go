@@ -57,6 +57,40 @@ func TestConfigFileValuesRejectEmptySettings(t *testing.T) {
 	})
 }
 
+func TestValidateSiteURL(t *testing.T) {
+	t.Parallel()
+
+	t.Run("accepts empty URL", func(t *testing.T) {
+		t.Parallel()
+		assert.NoError(t, validateSiteURL(""))
+	})
+
+	t.Run("accepts absolute HTTPS URL", func(t *testing.T) {
+		t.Parallel()
+		assert.NoError(t, validateSiteURL("https://example.com/docs/"))
+	})
+
+	t.Run("rejects relative URL", func(t *testing.T) {
+		t.Parallel()
+		assert.ErrorContains(t, validateSiteURL("docs/"), "absolute HTTP or HTTPS")
+	})
+
+	t.Run("rejects non HTTP scheme", func(t *testing.T) {
+		t.Parallel()
+		assert.ErrorContains(t, validateSiteURL("ftp://example.com/docs/"), "absolute HTTP or HTTPS")
+	})
+
+	t.Run("rejects query", func(t *testing.T) {
+		t.Parallel()
+		assert.ErrorContains(t, validateSiteURL("https://example.com/docs/?preview=1"), "query")
+	})
+
+	t.Run("rejects fragment", func(t *testing.T) {
+		t.Parallel()
+		assert.ErrorContains(t, validateSiteURL("https://example.com/docs/#top"), "fragment")
+	})
+}
+
 func TestValidateConfigAppliesCompleteValidation(t *testing.T) {
 	t.Parallel()
 

@@ -16,6 +16,7 @@ import (
 // normalizeConfig returns a build configuration with canonical plugin-independent presentation values.
 func normalizeConfig(config Config) Config {
 	config.Footer = strings.TrimSpace(config.Footer)
+	config.SiteURL = strings.TrimSpace(config.SiteURL)
 	config.ExternalLinks = normalizeExternalLinks(config.ExternalLinks)
 	return config
 }
@@ -72,6 +73,9 @@ func validateConfigValues(config Config) error {
 	if config.Language == "" {
 		return errors.New("language must not be empty")
 	}
+	if err := validateSiteURL(config.SiteURL); err != nil {
+		return err
+	}
 	if !domain.ValidNavigationStyle(config.NavigationStyle) {
 		return errors.New("navigation_style must be sidebar, topbar, or tree")
 	}
@@ -86,6 +90,27 @@ func validateConfigValues(config Config) error {
 	}
 
 	return nil
+}
+
+// validateSiteURL checks the optional published base URL used by static-site output.
+func validateSiteURL(value string) error {
+	if value == "" {
+		return nil
+	}
+
+	parsed, err := url.Parse(value)
+	if err != nil || parsed.Host == "" || !isHTTPURL(parsed) {
+		return errors.New("site_url must be an absolute HTTP or HTTPS URL")
+	}
+	if parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" {
+		return errors.New("site_url must not contain credentials, a query, or a fragment")
+	}
+	return nil
+}
+
+// isHTTPURL reports whether parsed uses the HTTP or HTTPS scheme.
+func isHTTPURL(parsed *url.URL) bool {
+	return strings.EqualFold(parsed.Scheme, "http") || strings.EqualFold(parsed.Scheme, "https")
 }
 
 // validateSidebarWidth checks the supported static navigation width range.
@@ -134,7 +159,7 @@ func validExternalLinkURL(value string) bool {
 		return false
 	}
 
-	return strings.EqualFold(parsed.Scheme, "http") || strings.EqualFold(parsed.Scheme, "https")
+	return isHTTPURL(parsed)
 }
 
 // validateBuildDirectories rejects source and output directory overlap.
