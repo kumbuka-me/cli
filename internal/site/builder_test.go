@@ -137,6 +137,13 @@ func TestMarkdownTitle(t *testing.T) {
 			wantTitle: "Real title",
 			wantFound: true,
 		},
+		{
+			name:      "backtick in fence info is not an opener",
+			source:    "```language`option\n# Real title\n",
+			route:     "page",
+			wantTitle: "Real title",
+			wantFound: true,
+		},
 		{name: "hash without separator", source: "#Not a heading\n", route: "fallback-title", wantTitle: "Fallback Title", wantFound: false},
 	}
 

@@ -156,7 +156,7 @@ func markdownTitle(source, route string) (title string, hasTitle bool) {
 		line = strings.TrimSuffix(line, "\r")
 		marker, length, rest, isFence := parseMarkdownFence(line)
 		if fence.marker != 0 {
-			if isFence && marker == fence.marker && length >= fence.length && strings.TrimSpace(rest) == "" {
+			if closesMarkdownFence(fence, marker, length, rest, isFence) {
 				fence = markdownFence{}
 			}
 			continue
@@ -196,7 +196,16 @@ func parseMarkdownFence(line string) (marker byte, length int, rest string, ok b
 	if length < 3 {
 		return 0, 0, "", false
 	}
-	return marker, length, content[length:], true
+	rest = content[length:]
+	if marker == '`' && strings.ContainsRune(rest, '`') {
+		return 0, 0, "", false
+	}
+	return marker, length, rest, true
+}
+
+// closesMarkdownFence reports whether a parsed marker closes the active fenced code block.
+func closesMarkdownFence(fence markdownFence, marker byte, length int, rest string, parsed bool) bool {
+	return parsed && marker == fence.marker && length >= fence.length && strings.TrimSpace(rest) == ""
 }
 
 // markdownATXH1 returns the text of a valid level-one ATX heading.
