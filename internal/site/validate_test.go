@@ -57,6 +57,22 @@ func TestConfigFileValuesRejectEmptySettings(t *testing.T) {
 	})
 }
 
+func TestValidateBuildDirectoriesRejectsSymlinkedOutputInsideSource(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	source := filepath.Join(root, "docs")
+	require.NoError(t, os.MkdirAll(source, 0o755))
+	alias := filepath.Join(root, "source-link")
+	if err := os.Symlink(source, alias); err != nil {
+		t.Skipf("symbolic links unavailable: %v", err)
+	}
+
+	err := validateBuildDirectories(source, filepath.Join(alias, "site"))
+
+	require.ErrorContains(t, err, "source_dir and output_dir must be separate directories")
+}
+
 func TestValidateSiteURL(t *testing.T) {
 	t.Parallel()
 

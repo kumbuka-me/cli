@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/kumbuka-me/cli/internal/pathutil"
 )
 
 // ReplaceDirectory populates a temporary sibling directory and replaces target only after populate succeeds.
@@ -39,7 +41,7 @@ func validateReplacementTarget(target string) error {
 		return errors.New("replacement target directory is required")
 	}
 
-	absolute, err := resolveExistingSymlinks(target)
+	absolute, err := pathutil.ResolveExisting(target)
 	if err != nil {
 		return err
 	}
@@ -47,54 +49,15 @@ func validateReplacementTarget(target string) error {
 	if err != nil {
 		return err
 	}
-	current, err = resolveExistingSymlinks(current)
+	current, err = pathutil.ResolveExisting(current)
 	if err != nil {
 		return err
 	}
 
-	if directoryContains(absolute, current) {
+	if pathutil.Contains(absolute, current) {
 		return fmt.Errorf("replacement target %s cannot contain the current working directory", target)
 	}
 	return nil
-}
-
-// resolveExistingSymlinks returns an absolute path with every existing prefix resolved through symlinks.
-func resolveExistingSymlinks(filename string) (string, error) {
-	absolute, err := filepath.Abs(filename)
-	if err != nil {
-		return "", err
-	}
-
-	current := absolute
-	missing := make([]string, 0)
-	for {
-		resolved, err := filepath.EvalSymlinks(current)
-		if err == nil {
-			for index := len(missing) - 1; index >= 0; index-- {
-				resolved = filepath.Join(resolved, missing[index])
-			}
-			return filepath.Clean(resolved), nil
-		}
-		if !errors.Is(err, os.ErrNotExist) {
-			return "", err
-		}
-
-		parent := filepath.Dir(current)
-		if parent == current {
-			return "", err
-		}
-		missing = append(missing, filepath.Base(current))
-		current = parent
-	}
-}
-
-// directoryContains reports whether child is equal to or nested below parent.
-func directoryContains(parent, child string) bool {
-	relative, err := filepath.Rel(parent, child)
-	if err != nil {
-		return false
-	}
-	return relative == "." || (relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)))
 }
 
 // replaceDirectory swaps one prepared directory into place and restores the previous target if the final rename fails.

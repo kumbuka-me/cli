@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/kumbuka-me/cli/internal/pathutil"
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
 	"github.com/kumbuka-me/kumbuka/pkg/icons"
 )
@@ -164,11 +165,11 @@ func validExternalLinkURL(value string) bool {
 
 // validateBuildDirectories rejects source and output directory overlap.
 func validateBuildDirectories(sourceDir, outputDir string) error {
-	source, err := filepath.Abs(sourceDir)
+	source, err := pathutil.ResolveExisting(sourceDir)
 	if err != nil {
 		return err
 	}
-	output, err := filepath.Abs(outputDir)
+	output, err := pathutil.ResolveExisting(outputDir)
 	if err != nil {
 		return err
 	}
@@ -198,11 +199,11 @@ func validateConfiguredPath(name, filename, outputDir string, directory bool) er
 		return nil
 	}
 
-	absolute, err := filepath.Abs(filename)
+	absolute, err := pathutil.ResolveExisting(filename)
 	if err != nil {
 		return err
 	}
-	output, err := filepath.Abs(outputDir)
+	output, err := pathutil.ResolveExisting(outputDir)
 	if err != nil {
 		return err
 	}
@@ -225,10 +226,10 @@ func validateConfiguredPath(name, filename, outputDir string, directory bool) er
 
 // pathOverlapsOutput reports whether a configured path would read from generated output.
 func pathOverlapsOutput(pathname, output string, directory bool) bool {
-	if pathname == output || directoryContains(output, pathname) {
+	if pathutil.Contains(output, pathname) {
 		return true
 	}
-	return directory && directoryContains(pathname, output)
+	return directory && pathutil.Contains(pathname, output)
 }
 
 // validateBrandingFormats checks configured branding file extensions.
@@ -261,20 +262,5 @@ func validateImageFormat(name, filename string) error {
 
 // directoriesOverlap reports whether either directory is equal to or contains the other.
 func directoriesOverlap(left, right string) bool {
-	if left == right {
-		return true
-	}
-	if directoryContains(left, right) {
-		return true
-	}
-	return directoryContains(right, left)
-}
-
-// directoryContains reports whether child is nested below parent.
-func directoryContains(parent, child string) bool {
-	relative, err := filepath.Rel(parent, child)
-	if err != nil || relative == "." {
-		return false
-	}
-	return relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator))
+	return pathutil.Contains(left, right) || pathutil.Contains(right, left)
 }
