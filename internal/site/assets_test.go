@@ -92,3 +92,24 @@ func TestCopySourceAssetsRejectsSymbolicLinks(t *testing.T) {
 	_, statErr := os.Stat(filepath.Join(output, "linked.txt"))
 	assert.ErrorIs(t, statErr, os.ErrNotExist)
 }
+
+func TestStaticPluginOrigin(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns configured deployment origin", func(t *testing.T) {
+		t.Parallel()
+
+		origin, err := staticPluginOrigin("https://docs.example.com/kumbuka/")
+
+		require.NoError(t, err)
+		assert.Equal(t, "https://docs.example.com", origin)
+	})
+
+	t.Run("requires site URL for browser plugins", func(t *testing.T) {
+		t.Parallel()
+
+		_, err := staticPluginOrigin("")
+
+		require.ErrorContains(t, err, "site_url is required")
+	})
+}

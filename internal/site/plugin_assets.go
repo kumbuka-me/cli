@@ -2,6 +2,7 @@ package site
 
 import (
 	"encoding/json"
+	"errors"
 	"html/template"
 	"net/url"
 	"path/filepath"
@@ -16,13 +17,19 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 	if manager == nil {
 		return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), nil)
 	}
-	origin, err := url.Parse(config.SiteURL)
+
+	modules := manager.BrowserModules()
+	if len(modules) == 0 {
+		return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), []byte(pluginbrowser.PresentationStyles(manager)))
+	}
+
+	origin, err := staticPluginOrigin(config.SiteURL)
 	if err != nil {
 		return err
 	}
 	prefix := publicURLPath(basePath, "plugins")
 	runtime := publicURLPath(basePath, "assets/js/plugins/frame.js")
-	for _, module := range manager.BrowserModules() {
+	for _, module := range modules {
 		names, err := manager.BrowserAssetNames(module.PluginID, module.Digest)
 		if err != nil {
 			return err
@@ -37,7 +44,7 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 				return err
 			}
 		}
-		frame, _, err := pluginbrowser.Frame(prefix, runtime, []string{origin.Scheme + "://" + origin.Host}, module)
+		frame, _, err := pluginbrowser.Frame(prefix, runtime, []string{origin}, module)
 		if err != nil {
 			return err
 		}
@@ -46,6 +53,16 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 		}
 	}
 	return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), []byte(pluginbrowser.PresentationStyles(manager)))
+}
+
+// staticPluginOrigin returns the absolute deployment origin required by browser-plugin frame policies.
+func staticPluginOrigin(siteURL string) (string, error) {
+	parsed, err := url.Parse(siteURL)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return "", errors.New("site_url is required when browser plugins are enabled")
+	}
+
+	return parsed.Scheme + "://" + parsed.Host, nil
 }
 
 // pluginModulesJSON serializes the current browser module catalog for embedding in generated pages.
