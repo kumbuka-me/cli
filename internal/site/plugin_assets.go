@@ -10,9 +10,7 @@ import (
 	"github.com/kumbuka-me/kumbuka/pkg/pluginbrowser"
 )
 
-// copyPluginAssets publishes the same active package bytes used by live Kumbuka.
-// Classic scripts keep opaque sandbox frames usable on ordinary static hosts
-// without requiring host-specific CORS configuration.
+// copyPluginAssets publishes active browser plugin assets and self-contained sandbox frames for static hosting.
 func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) error {
 	manager := renderer.PluginManager()
 	if manager == nil {
@@ -50,8 +48,7 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 	return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), []byte(pluginbrowser.PresentationStyles(manager)))
 }
 
-// pluginModulesJSON serializes the current browser module catalog directly into
-// generated pages. Static sites never fetch a mutable plugin catalog at runtime.
+// pluginModulesJSON serializes the current browser module catalog for embedding in generated pages.
 func pluginModulesJSON(renderer *md.Renderer, prefix string) (template.JS, error) {
 	data, err := json.Marshal(pluginbrowser.Catalog(prefix, renderer.PluginManager()))
 	if err != nil {

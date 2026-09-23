@@ -12,12 +12,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// repositoryStub provides deterministic mirror repository data for export tests.
 type repositoryStub struct {
-	pages       []domain.Page
-	images      []domain.Image
-	imageData   map[int64]domain.ImageData
+	// pages contains page inventory and page detail fixtures.
+	pages []domain.Page
+	// images contains image metadata fixtures.
+	images []domain.Image
+	// imageData contains image payloads keyed by identifier.
+	imageData map[int64]domain.ImageData
+	// attachments contains attachment metadata fixtures.
 	attachments []domain.Attachment
-	attachData  map[int64]domain.AttachmentData
+	// attachData contains attachment payloads keyed by identifier.
+	attachData map[int64]domain.AttachmentData
 }
 
 func (s repositoryStub) PageInventory(context.Context) ([]domain.Page, error) { return s.pages, nil }

@@ -12,18 +12,11 @@ import (
 
 // PostgresRepository provides the read-only PostgreSQL queries required by mirror export.
 type PostgresRepository struct {
+	// pool owns the PostgreSQL connections used by mirror queries.
 	pool *pgxpool.Pool
 }
 
-// OpenPostgres connects to an existing Kumbuka PostgreSQL database.
-//
-// Parameters:
-//   - ctx: Context used while establishing the database connection.
-//   - url: PostgreSQL connection URL for the Kumbuka database.
-//
-// Returns:
-//   - *PostgresRepository: Read-only mirror repository.
-//   - error: Connection or reachability failure.
+// OpenPostgres connects to an existing Kumbuka PostgreSQL database for read-only mirror queries.
 func OpenPostgres(ctx context.Context, url string) (*PostgresRepository, error) {
 	pool, err := pgxpool.New(ctx, url)
 	if err != nil {

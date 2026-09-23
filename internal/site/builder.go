@@ -465,8 +465,7 @@ func writeNotFoundPage(tmpl *template.Template, plan buildPlan, common viewData)
 	return writeTemplate(tmpl, outputFile(plan.config.OutputDir, "404.html"), data)
 }
 
-// BuildWithRenderer lets an application build a site using its active plugin
-// registry, including runtime-installed plugins. The caller owns the renderer.
+// BuildWithRenderer builds a site with the caller-owned renderer and its active plugin registry.
 func BuildWithRenderer(ctx context.Context, appFS fs.FS, config Config, renderer *md.Renderer) error {
 	if renderer == nil {
 		return fmt.Errorf("site renderer is required")
