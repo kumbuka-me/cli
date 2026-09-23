@@ -1,7 +1,7 @@
 // Clipboard helpers shared by interactive controls.
 export async function copyText(text) {
     if (!navigator.clipboard?.writeText) {
-        throw new Error("Clipboard API wird von diesem Browser oder Kontext nicht unterstützt.");
+        throw new Error("Clipboard API is not supported by this browser or context.");
     }
     await navigator.clipboard.writeText(text);
 }
@@ -32,3 +32,5 @@ export function setupCopyButton(button, value, ariaLabel) {
         }
     });
 }
+
+
