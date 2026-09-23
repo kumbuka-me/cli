@@ -441,17 +441,21 @@ func rewriteLocalURL(value, sourcePath string, routesBySource map[string]string,
 		return value, nil
 	}
 
+	basePath = ensureBasePath(basePath)
+	if !strings.HasPrefix(value, "//") && strings.HasPrefix(value, basePath) {
+		pathname, err := url.PathUnescape(value)
+		if err != nil {
+			return "", err
+		}
+		return (&url.URL{Path: pathname}).EscapedPath(), nil
+	}
+
 	parsed, err := url.Parse(value)
 	if err != nil {
 		return "", err
 	}
 	if !isRewritableLocalURL(value, parsed) {
 		return value, nil
-	}
-
-	basePath = ensureBasePath(basePath)
-	if basePath != "/" && strings.HasPrefix(parsed.Path, basePath) {
-		return parsed.String(), nil
 	}
 
 	trailingSlash := strings.HasSuffix(parsed.Path, "/")

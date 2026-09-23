@@ -15,7 +15,8 @@ func TestResolveExisting(t *testing.T) {
 	t.Run("resolves symlinked existing prefix", func(t *testing.T) {
 		t.Parallel()
 
-		root := t.TempDir()
+		root, err := filepath.EvalSymlinks(t.TempDir())
+		require.NoError(t, err)
 		realDirectory := filepath.Join(root, "real")
 		require.NoError(t, os.Mkdir(realDirectory, 0o755))
 		link := filepath.Join(root, "link")
@@ -32,7 +33,8 @@ func TestResolveExisting(t *testing.T) {
 	t.Run("retains suffix below regular file", func(t *testing.T) {
 		t.Parallel()
 
-		root := t.TempDir()
+		root, err := filepath.EvalSymlinks(t.TempDir())
+		require.NoError(t, err)
 		filename := filepath.Join(root, "file")
 		require.NoError(t, os.WriteFile(filename, []byte("content"), 0o644))
 

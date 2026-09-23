@@ -116,24 +116,49 @@ func TestRewriteLocalURL(t *testing.T) {
 		"guide/other.md": "guide/other",
 	}
 
-	page, err := rewriteLocalURL("other.md#section", "guide/page.md", routes, "/kumbuka/")
+	t.Run("rewrites Markdown page with fragment", func(t *testing.T) {
+		t.Parallel()
 
-	require.NoError(t, err)
-	assert.Equal(t, "/kumbuka/guide/other/#section", page)
+		page, err := rewriteLocalURL("other.md#section", "guide/page.md", routes, "/kumbuka/")
 
-	asset, err := rewriteLocalURL("images/example.png", "guide/page.md", routes, "/kumbuka/")
+		require.NoError(t, err)
+		assert.Equal(t, "/kumbuka/guide/other/#section", page)
+	})
 
-	require.NoError(t, err)
-	assert.Equal(t, "/kumbuka/guide/images/example.png", asset)
+	t.Run("rewrites relative asset", func(t *testing.T) {
+		t.Parallel()
 
-	prefixed, err := rewriteLocalURL("/kumbuka/guide/page #1/", "guide/page.md", routes, "/kumbuka/")
+		asset, err := rewriteLocalURL("images/example.png", "guide/page.md", routes, "/kumbuka/")
 
-	require.NoError(t, err)
-	assert.Equal(t, "/kumbuka/guide/page%20%231/", prefixed)
+		require.NoError(t, err)
+		assert.Equal(t, "/kumbuka/guide/images/example.png", asset)
+	})
 
-	_, err = rewriteLocalURL("missing.md", "guide/page.md", routes, "/kumbuka/")
+	t.Run("escapes literal characters in prefixed path", func(t *testing.T) {
+		t.Parallel()
 
-	require.Error(t, err)
+		prefixed, err := rewriteLocalURL("/kumbuka/guide/page #1/", "guide/page.md", routes, "/kumbuka/")
+
+		require.NoError(t, err)
+		assert.Equal(t, "/kumbuka/guide/page%20%231/", prefixed)
+	})
+
+	t.Run("does not double escape prefixed path", func(t *testing.T) {
+		t.Parallel()
+
+		prefixed, err := rewriteLocalURL("/kumbuka/guide/page%20%231/", "guide/page.md", routes, "/kumbuka/")
+
+		require.NoError(t, err)
+		assert.Equal(t, "/kumbuka/guide/page%20%231/", prefixed)
+	})
+
+	t.Run("rejects missing Markdown page", func(t *testing.T) {
+		t.Parallel()
+
+		_, err := rewriteLocalURL("missing.md", "guide/page.md", routes, "/kumbuka/")
+
+		require.Error(t, err)
+	})
 }
 
 func TestMarkdownTitle(t *testing.T) {
