@@ -5,8 +5,8 @@ go 1.27.0
 require (
 	github.com/containeroo/tinyflags v0.0.86
 	github.com/jackc/pgx/v5 v5.11.0
-	github.com/kumbuka-me/kumbuka v0.23.0
-	github.com/kumbuka-me/sdk v0.13.0
+	github.com/kumbuka-me/kumbuka v0.25.0
+	github.com/kumbuka-me/sdk v0.14.0
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/net v0.59.0
