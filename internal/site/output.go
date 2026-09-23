@@ -262,7 +262,13 @@ func staticSitemapURL(siteURL string) string {
 	return parsed.String()
 }
 
-// compareSearchEntries orders search results by case-insensitive page title.
+// compareSearchEntries orders search results by case-insensitive title with deterministic tie-breakers.
 func compareSearchEntries(left, right searchEntry) int {
-	return cmp.Compare(strings.ToLower(left.Title), strings.ToLower(right.Title))
+	if order := cmp.Compare(strings.ToLower(left.Title), strings.ToLower(right.Title)); order != 0 {
+		return order
+	}
+	if order := cmp.Compare(left.Title, right.Title); order != 0 {
+		return order
+	}
+	return cmp.Compare(left.URL, right.URL)
 }
