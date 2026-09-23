@@ -39,7 +39,7 @@ func validateReplacementTarget(target string) error {
 		return errors.New("replacement target directory is required")
 	}
 
-	absolute, err := filepath.Abs(target)
+	absolute, err := resolveExistingSymlinks(target)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func validateReplacementTarget(target string) error {
 	if err != nil {
 		return err
 	}
-	current, err = filepath.Abs(current)
+	current, err = resolveExistingSymlinks(current)
 	if err != nil {
 		return err
 	}
@@ -56,6 +56,36 @@ func validateReplacementTarget(target string) error {
 		return fmt.Errorf("replacement target %s cannot contain the current working directory", target)
 	}
 	return nil
+}
+
+// resolveExistingSymlinks returns an absolute path with every existing prefix resolved through symlinks.
+func resolveExistingSymlinks(filename string) (string, error) {
+	absolute, err := filepath.Abs(filename)
+	if err != nil {
+		return "", err
+	}
+
+	current := absolute
+	missing := make([]string, 0)
+	for {
+		resolved, err := filepath.EvalSymlinks(current)
+		if err == nil {
+			for index := len(missing) - 1; index >= 0; index-- {
+				resolved = filepath.Join(resolved, missing[index])
+			}
+			return filepath.Clean(resolved), nil
+		}
+		if !errors.Is(err, os.ErrNotExist) {
+			return "", err
+		}
+
+		parent := filepath.Dir(current)
+		if parent == current {
+			return "", err
+		}
+		missing = append(missing, filepath.Base(current))
+		current = parent
+	}
 }
 
 // directoryContains reports whether child is equal to or nested below parent.

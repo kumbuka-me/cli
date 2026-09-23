@@ -80,6 +80,26 @@ func TestReplaceDirectoryRejectsCurrentWorkingDirectoryAncestor(t *testing.T) {
 	assert.False(t, called)
 }
 
+func TestReplaceDirectoryRejectsSymlinkAliasOfCurrentWorkingDirectory(t *testing.T) {
+	t.Parallel()
+
+	current, err := os.Getwd()
+	require.NoError(t, err)
+	link := filepath.Join(t.TempDir(), "current-parent")
+	if err := os.Symlink(filepath.Dir(current), link); err != nil {
+		t.Skipf("symbolic links unavailable: %v", err)
+	}
+
+	called := false
+	err = ReplaceDirectory(filepath.Join(link, filepath.Base(current)), func(string) error {
+		called = true
+		return nil
+	})
+
+	require.ErrorContains(t, err, "cannot contain the current working directory")
+	assert.False(t, called)
+}
+
 func TestReplaceDirectoryRejectsEmptyTarget(t *testing.T) {
 	called := false
 	err := ReplaceDirectory("", func(string) error {
