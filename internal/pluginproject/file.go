@@ -155,7 +155,7 @@ func NormalizeDependency(dependency Dependency) (Dependency, error) {
 		return Dependency{}, fmt.Errorf("invalid plugin ID %q", dependency.ID)
 	case !validRepository(dependency.Repository):
 		return Dependency{}, fmt.Errorf("repository must be a GitHub owner/repository value")
-	case !tagPrefixPattern.MatchString(dependency.TagPrefix) || strings.Contains(dependency.TagPrefix, "..") || strings.Contains(dependency.TagPrefix, "//"):
+	case !validTagPrefix(dependency.TagPrefix):
 		return Dependency{}, fmt.Errorf("invalid tag_prefix %q", dependency.TagPrefix)
 	case !assetPattern.MatchString(dependency.Asset):
 		return Dependency{}, fmt.Errorf("invalid asset %q", dependency.Asset)
@@ -171,8 +171,21 @@ func validRepository(repository string) bool {
 	if !repositoryPattern.MatchString(repository) {
 		return false
 	}
+
 	owner, name, _ := strings.Cut(repository, "/")
-	return owner != "." && owner != ".." && name != "." && name != ".."
+	return validRepositoryPart(owner) && validRepositoryPart(name)
+}
+
+// validRepositoryPart reports whether one repository path segment cannot escape its namespace.
+func validRepositoryPart(value string) bool {
+	return value != "." && value != ".."
+}
+
+// validTagPrefix reports whether a release tag prefix is canonical and path-safe.
+func validTagPrefix(value string) bool {
+	return tagPrefixPattern.MatchString(value) &&
+		!strings.Contains(value, "..") &&
+		!strings.Contains(value, "//")
 }
 
 // Add appends one dependency to the project file.
