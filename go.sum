@@ -21,6 +21,8 @@ github.com/kumbuka-me/kumbuka v0.27.0 h1:YZo42Vf6SEBcvkSwS1uciReg34C8G3TJyI1Oo5J
 github.com/kumbuka-me/kumbuka v0.27.0/go.mod h1:502hkUMjecb3EdW2d5Nny02FRbwUv/kXCAMDkWejyYE=
 github.com/kumbuka-me/sdk v0.15.0 h1:GkIcd4lm5qy8w9eGz3xoJTfjoY1jiL1DJIr3ihBvujs=
 github.com/kumbuka-me/sdk v0.15.0/go.mod h1:c9uIQ2XOV1WeEOct9NrfOFwXSDnHF1e7cM4sxlJFvwI=
+github.com/kumbuka-me/sdk v0.16.0 h1:BpZAMDq/VyM433Z6bHDW+DCw201wJST7TpnmhcdQ6ao=
+github.com/kumbuka-me/sdk v0.16.0/go.mod h1:c9uIQ2XOV1WeEOct9NrfOFwXSDnHF1e7cM4sxlJFvwI=
 github.com/microcosm-cc/bluemonday v1.0.27 h1:MpEUotklkwCSLeH+Qdx1VJgNqLlpY2KXwXFM08ygZfk=
 github.com/microcosm-cc/bluemonday v1.0.27/go.mod h1:jFi9vgW+H7c3V0lb6nR74Ib/DIB5OBs92Dimizgw2cA=
 github.com/pelletier/go-toml/v2 v2.4.3 h1:GTRvJQutkOSftxIFD5xw9aepkYNuPWmVJpffdDPYVpY=
