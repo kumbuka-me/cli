@@ -86,9 +86,9 @@ type viewData struct {
 	// ActiveTheme is the configured initial theme name.
 	ActiveTheme string
 	// NavigationStyle is the configured desktop layout.
-	NavigationStyle string
+	NavigationStyle domain.NavigationStyle
 	// NavigationDensity is the configured navigation spacing.
-	NavigationDensity string
+	NavigationDensity domain.NavigationDensity
 	// SidebarWidth is the configured desktop sidebar width in pixels.
 	SidebarWidth int
 	// ExpandContentWhenHidden reports whether hidden navigation or page contents should release layout space.

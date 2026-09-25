@@ -38,11 +38,11 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 	language := flags.String("language", defaults.Language, "HTML content language").
 		NotEmpty().
 		Placeholder("LANG")
-	navigationStyle := flags.String("navigation-style", defaults.NavigationStyle, "Desktop navigation style").
-		Choices(domain.NavigationStyleSidebar, domain.NavigationStyleTopbar, domain.NavigationStyleTree).
+	navigationStyle := flags.String("navigation-style", string(defaults.NavigationStyle), "Desktop navigation style").
+		Choices(string(domain.NavigationStyleSidebar), string(domain.NavigationStyleTopbar), string(domain.NavigationStyleTree)).
 		Placeholder("STYLE")
-	navigationDensity := flags.String("navigation-density", defaults.NavigationDensity, "Navigation density").
-		Choices(domain.NavigationDensityComfortable, domain.NavigationDensityCompact).
+	navigationDensity := flags.String("navigation-density", string(defaults.NavigationDensity), "Navigation density").
+		Choices(string(domain.NavigationDensityComfortable), string(domain.NavigationDensityCompact)).
 		Placeholder("DENSITY")
 	sidebarWidth := flags.Int("sidebar-width", defaults.SidebarWidth, "Desktop sidebar width in pixels").
 		Validate(site.ValidateSidebarWidth).
@@ -50,8 +50,8 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 	pluginsFile := flags.String("plugins", defaults.PluginsFile, "Static plugin dependency file").
 		NotEmpty().
 		Placeholder("FILE")
-	robots := flags.String("robots", defaults.RobotsPolicy, "robots.txt policy").
-		Choices(domain.RobotsPolicyAllow, domain.RobotsPolicyDisallow, domain.RobotsPolicyNone).
+	robots := flags.String("robots", string(defaults.RobotsPolicy), "robots.txt policy").
+		Choices(string(domain.RobotsPolicyAllow), string(domain.RobotsPolicyDisallow), string(domain.RobotsPolicyNone)).
 		Placeholder("POLICY")
 	logFormat := flags.String("log-format", string(logging.LogFormatJSON), "Log output format").
 		Choices(string(logging.LogFormatText), string(logging.LogFormatJSON)).
@@ -83,10 +83,10 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 			cfg.Language = *language.Value()
 		}
 		if navigationStyle.Changed() {
-			cfg.NavigationStyle = *navigationStyle.Value()
+			cfg.NavigationStyle = domain.NavigationStyle(*navigationStyle.Value())
 		}
 		if navigationDensity.Changed() {
-			cfg.NavigationDensity = *navigationDensity.Value()
+			cfg.NavigationDensity = domain.NavigationDensity(*navigationDensity.Value())
 		}
 		if sidebarWidth.Changed() {
 			cfg.SidebarWidth = *sidebarWidth.Value()
@@ -95,7 +95,7 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 			cfg.PluginsFile = *pluginsFile.Value()
 		}
 		if robots.Changed() {
-			cfg.RobotsPolicy = *robots.Value()
+			cfg.RobotsPolicy = domain.RobotsPolicy(*robots.Value())
 		}
 		if err := site.ValidateConfig(cfg); err != nil {
 			return Config{}, err

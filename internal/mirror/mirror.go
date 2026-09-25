@@ -55,7 +55,7 @@ type pageMetadata struct {
 	// ViewCount is the persisted page view count.
 	ViewCount int64 `json:"view_count"`
 	// Status is the current page lifecycle status.
-	Status string `json:"status"`
+	Status domain.PageStatus `json:"status"`
 	// OwnerGroupID is the optional owning group identifier.
 	OwnerGroupID int64 `json:"owner_group_id,omitempty"`
 	// OwnerGroup is the optional owning group name.

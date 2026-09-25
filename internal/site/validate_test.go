@@ -153,5 +153,5 @@ func TestValidateConfigDoesNotMutateExternalLinks(t *testing.T) {
 	require.NoError(t, ValidateConfig(config))
 	assert.Equal(t, " Repository ", config.ExternalLinks[0].Label)
 	assert.Equal(t, " https://example.test ", config.ExternalLinks[0].URL)
-	assert.Equal(t, " lift ", config.ExternalLinks[0].HoverEffect)
+	assert.Equal(t, domain.ExternalLinkHoverEffect(" lift "), config.ExternalLinks[0].HoverEffect)
 }

@@ -56,7 +56,7 @@ func parseTemplate(pageTemplate, basePath string, iconCatalog *icons.Catalog) (*
 		"icon":          iconCatalog.SVG,
 		"externalhover": domain.ExternalLinkHoverTitle,
 		"externalhovereffect": func(link domain.ExternalLink) string {
-			return domain.EffectiveExternalLinkHoverEffect(link.HoverEffect)
+			return string(domain.EffectiveExternalLinkHoverEffect(link.HoverEffect))
 		},
 		"pageurl": func(route string) string {
 			return pageURL(basePath, route)

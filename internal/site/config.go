@@ -39,15 +39,15 @@ type Config struct {
 	// Language becomes the generated HTML content language.
 	Language string `toml:"language"`
 	// NavigationStyle selects the desktop navigation layout.
-	NavigationStyle string `toml:"navigation_style"`
+	NavigationStyle domain.NavigationStyle `toml:"navigation_style"`
 	// NavigationDensity selects the navigation spacing preset.
-	NavigationDensity string `toml:"navigation_density"`
+	NavigationDensity domain.NavigationDensity `toml:"navigation_density"`
 	// SidebarWidth is the desktop sidebar width in pixels.
 	SidebarWidth int `toml:"sidebar_width"`
 	// ExpandContentWhenHidden lets static pages reclaim hidden navigation and page-contents space.
 	ExpandContentWhenHidden bool `toml:"expand_content_when_hidden"`
 	// RobotsPolicy controls generated robots.txt content.
-	RobotsPolicy string `toml:"robots"`
+	RobotsPolicy domain.RobotsPolicy `toml:"robots"`
 	// ExternalLinks contains configured top-bar links.
 	ExternalLinks []domain.ExternalLink `toml:"external_links"`
 	// PluginsFile is the project dependency file selected outside TOML configuration.
