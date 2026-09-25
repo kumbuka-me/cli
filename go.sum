@@ -17,6 +17,8 @@ github.com/kaugesaar/lucide-go v0.27.0 h1:zSh9nRBTB7CxzfAvvMMpo5r2DQhGxVVbOPhvfm
 github.com/kaugesaar/lucide-go v0.27.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
 github.com/kumbuka-me/kumbuka v0.25.0 h1:CVHrJ6Kqyj1GEiE7xxOkV2uKGFTrxSOGfMUeYe8B3hs=
 github.com/kumbuka-me/kumbuka v0.25.0/go.mod h1:/uEdjSlzbGM/B/eikzIBycw9BevuvCj9eKa4hcHx9zQ=
+github.com/kumbuka-me/kumbuka v0.27.0 h1:YZo42Vf6SEBcvkSwS1uciReg34C8G3TJyI1Oo5J9/PU=
+github.com/kumbuka-me/kumbuka v0.27.0/go.mod h1:502hkUMjecb3EdW2d5Nny02FRbwUv/kXCAMDkWejyYE=
 github.com/kumbuka-me/sdk v0.15.0 h1:GkIcd4lm5qy8w9eGz3xoJTfjoY1jiL1DJIr3ihBvujs=
 github.com/kumbuka-me/sdk v0.15.0/go.mod h1:c9uIQ2XOV1WeEOct9NrfOFwXSDnHF1e7cM4sxlJFvwI=
 github.com/microcosm-cc/bluemonday v1.0.27 h1:MpEUotklkwCSLeH+Qdx1VJgNqLlpY2KXwXFM08ygZfk=
