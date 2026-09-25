@@ -15,8 +15,6 @@ github.com/jackc/puddle/v2 v2.2.2 h1:PR8nw+E/1w0GLuRFSmiioY6UooMp6KJv0/61nB7icHo
 github.com/jackc/puddle/v2 v2.2.2/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
 github.com/kaugesaar/lucide-go v0.27.0 h1:zSh9nRBTB7CxzfAvvMMpo5r2DQhGxVVbOPhvfmXUQ5k=
 github.com/kaugesaar/lucide-go v0.27.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
-github.com/kumbuka-me/kumbuka v0.28.1 h1:xGk632XY3Bnk9my3OygjCRYNnXgT2rLrjGg/BwywzOA=
-github.com/kumbuka-me/kumbuka v0.28.1/go.mod h1:DlEdbGeMQTulq7G22EONqRvFsFvD5OPTyPPneDRj3Vw=
 github.com/kumbuka-me/kumbuka v0.30.0 h1:ndqMjenxyMuoYIOq1f37anohCsITGyB/WyYu2ywDvlY=
 github.com/kumbuka-me/kumbuka v0.30.0/go.mod h1:7nAQxOx/4wzJJnfLTaQjZgswsU7Ae1PbULwKEazhMNk=
 github.com/kumbuka-me/sdk v0.18.0 h1:TYr4vdjatR2BEnEatakq4tRCEi7jmdqGxhsf5u8VDjs=
