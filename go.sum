@@ -15,8 +15,12 @@ github.com/jackc/puddle/v2 v2.2.2 h1:PR8nw+E/1w0GLuRFSmiioY6UooMp6KJv0/61nB7icHo
 github.com/jackc/puddle/v2 v2.2.2/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
 github.com/kaugesaar/lucide-go v0.27.0 h1:zSh9nRBTB7CxzfAvvMMpo5r2DQhGxVVbOPhvfmXUQ5k=
 github.com/kaugesaar/lucide-go v0.27.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
+github.com/kaugesaar/lucide-go v0.28.0 h1:7a2ojdvnFivAmMTXTGgnYldRirvH35AG19rtUUQM8LQ=
+github.com/kaugesaar/lucide-go v0.28.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
 github.com/kumbuka-me/kumbuka v0.32.0 h1:F5GlQ5wX1wSWBRwcvTwwD7IDVRTOr4ge3GcZZWpK1EQ=
 github.com/kumbuka-me/kumbuka v0.32.0/go.mod h1:Jm333vDpfvhSiQFR9fI47FInDBCgSWmt8BXnSdcLzKc=
+github.com/kumbuka-me/kumbuka v0.33.0 h1:dRPNruvLPHg1KLW0XZxMRA/y6SV7ZdHaK0lGz/ioBSI=
+github.com/kumbuka-me/kumbuka v0.33.0/go.mod h1:cyYWZ/mchcKmu5dDPvZosla1TQDISE6MQJQgbo5cxnM=
 github.com/kumbuka-me/sdk v0.18.0 h1:TYr4vdjatR2BEnEatakq4tRCEi7jmdqGxhsf5u8VDjs=
 github.com/kumbuka-me/sdk v0.18.0/go.mod h1:c9uIQ2XOV1WeEOct9NrfOFwXSDnHF1e7cM4sxlJFvwI=
 github.com/microcosm-cc/bluemonday v1.0.27 h1:MpEUotklkwCSLeH+Qdx1VJgNqLlpY2KXwXFM08ygZfk=
