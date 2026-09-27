@@ -53,10 +53,17 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 	robots := flags.String("robots", string(defaults.RobotsPolicy), "robots.txt policy").
 		Choices(string(domain.RobotsPolicyAllow), string(domain.RobotsPolicyDisallow), string(domain.RobotsPolicyNone)).
 		Placeholder("POLICY")
-	logFormat := flags.String("log-format", string(logging.LogFormatJSON), "Log output format").
-		Choices(string(logging.LogFormatText), string(logging.LogFormatJSON)).
+	logFormat := tinyflags.Enum(
+		flags,
+		"log-format",
+		logging.LogFormatJSON,
+		"Log output format",
+		logging.LogFormatText,
+		logging.LogFormatJSON,
+	).
 		Short("l").
-		Placeholder("FORMAT")
+		Placeholder("FORMAT").
+		Value()
 
 	return func() (Config, error) {
 		cfg, err := site.LoadConfig(*configPath.Value(), configPath.Changed())
@@ -103,7 +110,7 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 
 		return Config{
 			Site:      cfg,
-			LogFormat: logging.LogFormat(*logFormat.Value()),
+			LogFormat: *logFormat,
 		}, nil
 	}
 }
