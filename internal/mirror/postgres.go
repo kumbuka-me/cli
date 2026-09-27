@@ -77,6 +77,18 @@ ORDER BY p.slug`)
 
 // GetPage returns complete mirror metadata and Markdown for one active page.
 func (r *PostgresRepository) GetPage(ctx context.Context, slug string) (domain.Page, error) {
+	page, err := r.page(ctx, slug)
+	if err != nil {
+		return domain.Page{}, err
+	}
+	if err := r.loadPageCollections(ctx, &page); err != nil {
+		return domain.Page{}, err
+	}
+	return page, nil
+}
+
+// page loads the scalar page projection required by mirror export.
+func (r *PostgresRepository) page(ctx context.Context, slug string) (domain.Page, error) {
 	var page domain.Page
 	err := r.pool.QueryRow(ctx, `
 SELECT
@@ -128,21 +140,22 @@ WHERE p.slug=$1 AND p.deleted_at IS NULL`, slug).Scan(
 	if err != nil {
 		return domain.Page{}, fmt.Errorf("read page %q: %w", slug, err)
 	}
+	return page, nil
+}
 
+// loadPageCollections attaches tags, groups, and properties to one loaded page.
+func (r *PostgresRepository) loadPageCollections(ctx context.Context, page *domain.Page) error {
+	var err error
 	page.Tags, err = r.pageTags(ctx, page.ID)
 	if err != nil {
-		return domain.Page{}, err
+		return err
 	}
 	page.Groups, err = r.pageGroups(ctx, page.ID)
 	if err != nil {
-		return domain.Page{}, err
+		return err
 	}
 	page.Properties, err = r.pageProperties(ctx, page.ID)
-	if err != nil {
-		return domain.Page{}, err
-	}
-
-	return page, nil
+	return err
 }
 
 // Images returns the stored image identifiers required by mirror export.
