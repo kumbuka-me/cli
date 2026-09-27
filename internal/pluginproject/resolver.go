@@ -155,11 +155,7 @@ func (r *Resolver) cacheFilename(dependency Dependency) string {
 
 // resolvedPackage verifies package structure and the declared identity/version.
 func resolvedPackage(dependency Dependency, archive []byte) (Resolved, error) {
-	compatibleArchive, err := staticCompatibleArchive(archive)
-	if err != nil {
-		return Resolved{}, fmt.Errorf("prepare static package: %w", err)
-	}
-	pkg, err := pluginpackage.Read(compatibleArchive)
+	pkg, err := pluginpackage.Read(archive)
 	if err != nil {
 		return Resolved{}, fmt.Errorf("read package: %w", err)
 	}
@@ -183,7 +179,7 @@ func resolvedPackage(dependency Dependency, archive []byte) (Resolved, error) {
 		)
 	}
 
-	return Resolved{Dependency: dependency, Manifest: manifest, Archive: slices.Clone(compatibleArchive)}, nil
+	return Resolved{Dependency: dependency, Manifest: manifest, Archive: slices.Clone(archive)}, nil
 }
 
 // download fetches a release package and verifies its published SHA-256 checksum.

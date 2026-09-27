@@ -146,7 +146,7 @@ func TestResolverCacheFilenameUsesFullRepositoryDigest(t *testing.T) {
 	assert.Len(t, digestDirectory, sha256.Size*2)
 }
 
-func TestResolvedPackageDowngradesAdminOnlyListFieldsForStaticRuntime(t *testing.T) {
+func TestResolvedPackagePreservesSupportedConfigurationFields(t *testing.T) {
 	t.Parallel()
 
 	var output bytes.Buffer
@@ -199,5 +199,8 @@ permissions: []
 	require.NoError(t, err)
 	require.Len(t, resolved.Manifest.Modules, 2)
 	require.Len(t, resolved.Manifest.Modules[0].Fields, 2)
-	assert.Equal(t, "textarea", resolved.Manifest.Modules[0].Fields[1].Type)
+	assert.Equal(t, "list", resolved.Manifest.Modules[0].Fields[1].Type)
+	require.Len(t, resolved.Manifest.Modules[0].Fields[1].Columns, 2)
+	assert.Equal(t, "color", resolved.Manifest.Modules[0].Fields[1].Columns[1].Type)
+	assert.Equal(t, output.Bytes(), resolved.Archive)
 }
