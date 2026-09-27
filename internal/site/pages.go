@@ -14,6 +14,7 @@ import (
 	"unicode"
 
 	md "github.com/kumbuka-me/kumbuka/pkg/markdown"
+	pluginmarkdown "github.com/kumbuka-me/sdk/markdown"
 	xhtml "golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
@@ -138,31 +139,22 @@ func markdownFileRoute(filename string) string {
 	return strings.Trim(clean, "/")
 }
 
-// markdownFence tracks an open fenced code block while scanning page titles.
-type markdownFence struct {
-	// marker is the backtick or tilde character opening the fence.
-	marker byte
-	// length is the opening marker run length required by a closing fence.
-	length int
-}
-
 // markdownTitle extracts the first Markdown level-one heading or derives a title from the route.
 func markdownTitle(source, route string) (title string, hasTitle bool) {
-	var fence markdownFence
+	fence := ""
 	previous := ""
 	previousCanBeSetext := false
 
 	for line := range strings.SplitSeq(strings.TrimPrefix(source, "\ufeff"), "\n") {
 		line = strings.TrimSuffix(line, "\r")
-		marker, length, rest, isFence := parseMarkdownFence(line)
-		if fence.marker != 0 {
-			if closesMarkdownFence(fence, marker, length, rest, isFence) {
-				fence = markdownFence{}
+		if fence != "" {
+			if pluginmarkdown.Closes(line, fence) {
+				fence = ""
 			}
 			continue
 		}
-		if isFence {
-			fence = markdownFence{marker: marker, length: length}
+		if marker := pluginmarkdown.Fence(line); marker != "" {
+			fence = marker
 			previousCanBeSetext = false
 			continue
 		}
@@ -180,32 +172,6 @@ func markdownTitle(source, route string) (title string, hasTitle bool) {
 	}
 
 	return derivedPageTitle(route), false
-}
-
-// parseMarkdownFence reports fenced-code markers indented by at most three spaces.
-func parseMarkdownFence(line string) (marker byte, length int, rest string, ok bool) {
-	content, valid := markdownIndentedLine(line)
-	if !valid || len(content) < 3 || (content[0] != '`' && content[0] != '~') {
-		return 0, 0, "", false
-	}
-
-	marker = content[0]
-	for length < len(content) && content[length] == marker {
-		length++
-	}
-	if length < 3 {
-		return 0, 0, "", false
-	}
-	rest = content[length:]
-	if marker == '`' && strings.ContainsRune(rest, '`') {
-		return 0, 0, "", false
-	}
-	return marker, length, rest, true
-}
-
-// closesMarkdownFence reports whether a parsed marker closes the active fenced code block.
-func closesMarkdownFence(fence markdownFence, marker byte, length int, rest string, parsed bool) bool {
-	return parsed && marker == fence.marker && length >= fence.length && strings.TrimSpace(rest) == ""
 }
 
 // markdownATXH1 returns the text of a valid level-one ATX heading.
@@ -441,18 +407,13 @@ func rewriteLocalURL(value, sourcePath string, routesBySource map[string]string,
 		return value, nil
 	}
 
-	basePath = ensureBasePath(basePath)
-	if !strings.HasPrefix(value, "//") && strings.HasPrefix(value, basePath) {
-		pathname, err := url.PathUnescape(value)
-		if err != nil {
-			return "", err
-		}
-		return (&url.URL{Path: pathname}).EscapedPath(), nil
-	}
-
 	parsed, err := url.Parse(value)
 	if err != nil {
 		return "", err
+	}
+	basePath = ensureBasePath(basePath)
+	if alreadyPublishedURL(value, parsed, basePath) {
+		return parsed.String(), nil
 	}
 	if !isRewritableLocalURL(value, parsed) {
 		return value, nil
@@ -460,7 +421,7 @@ func rewriteLocalURL(value, sourcePath string, routesBySource map[string]string,
 
 	trailingSlash := strings.HasSuffix(parsed.Path, "/")
 	resolved := resolveLocalPath(parsed.Path, sourcePath)
-	if resolved == ".." || strings.HasPrefix(resolved, "../") {
+	if escapesSourceTree(resolved) {
 		return "", fmt.Errorf("link %q escapes the documentation source", value)
 	}
 
@@ -478,6 +439,16 @@ func rewriteLocalURL(value, sourcePath string, routesBySource map[string]string,
 	}
 
 	return parsed.String(), nil
+}
+
+// alreadyPublishedURL reports whether a local URL already points below the configured static base path.
+func alreadyPublishedURL(raw string, parsed *url.URL, basePath string) bool {
+	return !strings.HasPrefix(raw, "//") && parsed.Scheme == "" && parsed.Host == "" && strings.HasPrefix(parsed.Path, basePath)
+}
+
+// escapesSourceTree reports whether a resolved local path traverses above the documentation source root.
+func escapesSourceTree(resolved string) bool {
+	return resolved == ".." || strings.HasPrefix(resolved, "../")
 }
 
 // resolveLocalPath resolves one URL path relative to its Markdown source file.
