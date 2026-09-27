@@ -161,6 +161,15 @@ func TestRewriteLocalURL(t *testing.T) {
 		assert.Equal(t, "/kumbuka/guide/page%20%231/?mode=print#details", prefixed)
 	})
 
+	t.Run("preserves fragment on prefixed path", func(t *testing.T) {
+		t.Parallel()
+
+		prefixed, err := rewriteLocalURL("/kumbuka/guide/page/#details", "guide/page.md", routes, "/kumbuka/")
+
+		require.NoError(t, err)
+		assert.Equal(t, "/kumbuka/guide/page/#details", prefixed)
+	})
+
 	t.Run("rejects missing Markdown page", func(t *testing.T) {
 		t.Parallel()
 

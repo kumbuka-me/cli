@@ -413,7 +413,7 @@ func rewriteLocalURL(value, sourcePath string, routesBySource map[string]string,
 	}
 	basePath = ensureBasePath(basePath)
 	if alreadyPublishedURL(value, parsed, basePath) {
-		return parsed.String(), nil
+		return normalizePublishedURL(parsed), nil
 	}
 	if !isRewritableLocalURL(value, parsed) {
 		return value, nil
@@ -444,6 +444,15 @@ func rewriteLocalURL(value, sourcePath string, routesBySource map[string]string,
 // alreadyPublishedURL reports whether a local URL already points below the configured static base path.
 func alreadyPublishedURL(raw string, parsed *url.URL, basePath string) bool {
 	return !strings.HasPrefix(raw, "//") && parsed.Scheme == "" && parsed.Host == "" && strings.HasPrefix(parsed.Path, basePath)
+}
+
+// normalizePublishedURL preserves URL metadata while escaping literal path characters.
+func normalizePublishedURL(parsed *url.URL) string {
+	if parsed.RawQuery == "" && strings.HasSuffix(parsed.Fragment, "/") {
+		return (&url.URL{Path: parsed.Path + "#" + parsed.Fragment}).EscapedPath()
+	}
+
+	return parsed.String()
 }
 
 // escapesSourceTree reports whether a resolved local path traverses above the documentation source root.
