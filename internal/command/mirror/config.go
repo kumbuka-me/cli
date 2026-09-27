@@ -35,13 +35,20 @@ func BindFlags(flags *tinyflags.FlagSet) func() Config {
 	flags.StringVar(&cfg.OutputDir, "output", defaultOutputDir, "Directory that receives the Git-friendly mirror").
 		Placeholder("DIR").
 		Value()
-	logFormat := flags.String("log-format", string(cfg.LogFormat), "Log output format").
-		Choices(string(logging.LogFormatText), string(logging.LogFormatJSON)).
+	logFormat := tinyflags.Enum(
+		flags,
+		"log-format",
+		logging.LogFormatJSON,
+		"Log output format",
+		logging.LogFormatText,
+		logging.LogFormatJSON,
+	).
 		Short("l").
-		Placeholder("FORMAT")
+		Placeholder("FORMAT").
+		Value()
 
 	return func() Config {
-		cfg.LogFormat = logging.LogFormat(*logFormat.Value())
+		cfg.LogFormat = *logFormat
 		return cfg
 	}
 }
