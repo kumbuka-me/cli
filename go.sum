@@ -15,8 +15,8 @@ github.com/jackc/puddle/v2 v2.2.2 h1:PR8nw+E/1w0GLuRFSmiioY6UooMp6KJv0/61nB7icHo
 github.com/jackc/puddle/v2 v2.2.2/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
 github.com/kaugesaar/lucide-go v0.28.0 h1:7a2ojdvnFivAmMTXTGgnYldRirvH35AG19rtUUQM8LQ=
 github.com/kaugesaar/lucide-go v0.28.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
-github.com/kumbuka-me/kumbuka v0.36.2 h1:psNW1oO4ToEfNw1L0hDyxDJ0XIS8kpCC4tRdxey1bcg=
-github.com/kumbuka-me/kumbuka v0.36.2/go.mod h1:cyYWZ/mchcKmu5dDPvZosla1TQDISE6MQJQgbo5cxnM=
+github.com/kumbuka-me/kumbuka v0.37.0 h1:GUcB/DjqBgSGJzp1SKZtBCofIioZd3ahcckkT9Ge1mA=
+github.com/kumbuka-me/kumbuka v0.37.0/go.mod h1:KAA1cyQAS6FxWZ3arfh+umORcdHXHiqE2I0alKdEM2Q=
 github.com/kumbuka-me/sdk v0.19.0 h1:i7GtqpUqKACEeiDbWCNk0FUp4F5hOcyOMdp4PpnTfwc=
 github.com/kumbuka-me/sdk v0.19.0/go.mod h1:vbSRD7oy3bHtaSiWalviIoqRlbpzzRCpecCTqg2SKuI=
 github.com/microcosm-cc/bluemonday v1.0.27 h1:MpEUotklkwCSLeH+Qdx1VJgNqLlpY2KXwXFM08ygZfk=
@@ -32,8 +32,8 @@ github.com/stretchr/testify v1.12.1 h1:EuwCh5fleGS7H32xRwO3wRGT7DxrDhLAT6FF8MpWD
 github.com/stretchr/testify v1.12.1/go.mod h1:MDEgiDPPsNp5cuIrHPPCyornHKgEVbtFUmoNlxoYthg=
 github.com/tetratelabs/wazero v1.12.0 h1:DuWcpNu/FzgEXgGBDp8J1Spc+CWOvvtvVyjKlaZopYU=
 github.com/tetratelabs/wazero v1.12.0/go.mod h1:LvKtzl2RqO4gyF27BiXU+nKAjcV8f38U+kP/q2vgxh0=
-github.com/yuin/goldmark/v2 v2.1.5 h1:ij6SZY7VRLXVPRDHEK71Beo3gHaN1gAPdOL+CKgsCdc=
-github.com/yuin/goldmark/v2 v2.1.5/go.mod h1:G6M4/qOFtfn01/o14BU1UR2Lo5N3S9Qo7xCuz/sHjGQ=
+github.com/yuin/goldmark/v2 v2.1.6 h1:igy0q9JcqovoFXFx/XjtU8sHVhcUHavPj2sA3EoKJUE=
+github.com/yuin/goldmark/v2 v2.1.6/go.mod h1:G6M4/qOFtfn01/o14BU1UR2Lo5N3S9Qo7xCuz/sHjGQ=
 go.yaml.in/yaml/v3 v3.0.5 h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=
 go.yaml.in/yaml/v3 v3.0.5/go.mod h1:HVTZu1O7/Vkt2N+BFy8Zza+lnLsABggaTM2ZpNIGuKg=
 golang.org/x/net v0.59.0 h1:5zfYln+w5XCxwrnMMJPufRgNoXEaGxl0wo5GqPXyues=
