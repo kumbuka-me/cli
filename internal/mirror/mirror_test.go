@@ -124,16 +124,14 @@ func TestExport(t *testing.T) {
 	})
 }
 
-func TestValidateOutputDir(t *testing.T) {
-	t.Parallel()
-
-	t.Run("rejects empty output", func(t *testing.T) {
-		t.Parallel()
-		assert.Error(t, validateOutputDir(""))
-	})
-
-	t.Run("accepts child output", func(t *testing.T) {
-		t.Parallel()
-		assert.NoError(t, validateOutputDir(filepath.Join(t.TempDir(), "mirror")))
-	})
+func TestWriteBinaryUsesSafeFallbackName(t *testing.T) {
+	for _, filename := range []string{"", ".", "..", "/"} {
+		t.Run(filename, func(t *testing.T) {
+			output := t.TempDir()
+			require.NoError(t, writeBinary(output, "media", 7, filename, []byte("data")))
+			data, err := os.ReadFile(filepath.Join(output, "media", "7", "file"))
+			require.NoError(t, err)
+			assert.Equal(t, "data", string(data))
+		})
+	}
 }

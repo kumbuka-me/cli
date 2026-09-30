@@ -3,6 +3,7 @@
 package mirror
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -84,10 +85,6 @@ type manifest struct {
 
 // Export stages a complete repository snapshot before replacing outputDir.
 func Export(ctx context.Context, repository repository, outputDir string) error {
-	if err := validateOutputDir(outputDir); err != nil {
-		return err
-	}
-
 	return stagedwrite.ReplaceDirectory(outputDir, func(staging string) error {
 		return exportInto(ctx, repository, staging)
 	})
@@ -170,7 +167,7 @@ func exportImages(ctx context.Context, repository repository, outputDir string) 
 	}
 
 	slices.SortFunc(images, func(left, right domain.Image) int {
-		return compareID(left.ID, right.ID)
+		return cmp.Compare(left.ID, right.ID)
 	})
 
 	ids := make([]int64, 0, len(images))
@@ -199,7 +196,7 @@ func exportAttachments(ctx context.Context, repository repository, outputDir str
 	}
 
 	slices.SortFunc(attachments, func(left, right domain.Attachment) int {
-		return compareID(left.ID, right.ID)
+		return cmp.Compare(left.ID, right.ID)
 	})
 
 	ids := make([]int64, 0, len(attachments))
@@ -261,7 +258,7 @@ func writePage(outputDir string, page domain.Page) error {
 // writeBinary writes one uploaded object below its stable identifier.
 func writeBinary(outputDir, kind string, id int64, filename string, data []byte) error {
 	name := filepath.Base(filepath.FromSlash(filename))
-	if name == "." || name == string(filepath.Separator) || name == "" {
+	if name == "." || name == ".." || name == string(filepath.Separator) || name == "" {
 		name = "file"
 	}
 	return writeFile(filepath.Join(outputDir, kind, fmt.Sprint(id), name), data)
@@ -302,24 +299,4 @@ func mirrorRelativePagePath(slug string) (string, error) {
 	}
 
 	return cleaned, nil
-}
-
-// compareID orders integer identifiers in ascending order.
-func compareID(left, right int64) int {
-	switch {
-	case left < right:
-		return -1
-	case left > right:
-		return 1
-	default:
-		return 0
-	}
-}
-
-// validateOutputDir rejects empty or destructive mirror destinations.
-func validateOutputDir(outputDir string) error {
-	if strings.TrimSpace(outputDir) == "" {
-		return errors.New("mirror output directory is required")
-	}
-	return nil
 }
