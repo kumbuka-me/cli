@@ -161,3 +161,32 @@ func TestReplaceDirectoryRestoresOutputWhenInstallFails(t *testing.T) {
 	require.Len(t, entries, 1)
 	assert.Equal(t, "site", entries[0].Name())
 }
+
+func TestReplaceDirectoryPreservesBackupWhenRollbackFails(t *testing.T) {
+	t.Parallel()
+	parent := t.TempDir()
+	target := filepath.Join(parent, "site")
+	staging := filepath.Join(parent, "staging")
+	require.NoError(t, os.Mkdir(target, 0o755))
+	require.NoError(t, os.Mkdir(staging, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(target, "precious.txt"), []byte("keep"), 0o644))
+	installFailure := errors.New("installation failed")
+	rollbackFailure := errors.New("rollback failed")
+	var backup string
+	err := replaceDirectoryUsing(staging, target, func(from, to string) error {
+		if from == target {
+			backup = to
+			return os.Rename(from, to)
+		}
+		if from == staging {
+			return installFailure
+		}
+		return rollbackFailure
+	})
+	require.ErrorIs(t, err, installFailure)
+	require.ErrorIs(t, err, rollbackFailure)
+	require.ErrorContains(t, err, backup)
+	data, err := os.ReadFile(filepath.Join(backup, "precious.txt"))
+	require.NoError(t, err)
+	assert.Equal(t, "keep", string(data))
+}

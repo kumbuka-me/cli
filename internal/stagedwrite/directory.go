@@ -62,9 +62,14 @@ func validateReplacementTarget(target string) error {
 
 // replaceDirectory swaps one prepared directory into place and restores the previous target if the final rename fails.
 func replaceDirectory(staging, target string) error {
+	return replaceDirectoryUsing(staging, target, os.Rename)
+}
+
+// replaceDirectoryUsing keeps recovery data when the supplied rename operation cannot restore the target.
+func replaceDirectoryUsing(staging, target string, rename func(string, string) error) error {
 	info, err := os.Lstat(target)
 	if errors.Is(err, os.ErrNotExist) {
-		return os.Rename(staging, target)
+		return rename(staging, target)
 	}
 	if err != nil {
 		return fmt.Errorf("inspect existing output %s: %w", target, err)
@@ -78,18 +83,24 @@ func replaceDirectory(staging, target string) error {
 	if err != nil {
 		return fmt.Errorf("create output backup for %s: %w", target, err)
 	}
-	defer func() { _ = os.RemoveAll(backupRoot) }()
+	preserveBackup := false
+	defer func() {
+		if !preserveBackup {
+			_ = os.RemoveAll(backupRoot)
+		}
+	}()
 
 	backup := filepath.Join(backupRoot, "previous")
-	if err := os.Rename(target, backup); err != nil {
+	if err := rename(target, backup); err != nil {
 		return fmt.Errorf("move previous output %s aside: %w", target, err)
 	}
-	if err := os.Rename(staging, target); err != nil {
-		rollbackErr := os.Rename(backup, target)
+	if err := rename(staging, target); err != nil {
+		rollbackErr := rename(backup, target)
 		if rollbackErr != nil {
+			preserveBackup = true
 			return errors.Join(
 				fmt.Errorf("install staged output %s: %w", target, err),
-				fmt.Errorf("restore previous output %s: %w", target, rollbackErr),
+				fmt.Errorf("restore previous output %s (backup retained at %s): %w", target, backup, rollbackErr),
 			)
 		}
 		return fmt.Errorf("install staged output %s: %w", target, err)
