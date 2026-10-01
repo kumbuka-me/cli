@@ -32,7 +32,7 @@ func Run(
 			return err
 		}
 
-		return build.Run(ctx, cfg, buildCommand.OverriddenValues(), stdout)
+		return build.Run(ctx, cfg, buildCommand.Overrides().Values(), stdout)
 	})
 
 	pluginsCommand := root.Command("plugins", "Manage static-site plugin dependencies").RequireCommand()
