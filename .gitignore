@@ -9,3 +9,5 @@ coverage.html
 # Local development workspace
 /go.work
 /go.work.sum
+
+.projectatlas/
