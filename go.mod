@@ -3,7 +3,7 @@ module github.com/kumbuka-me/cli
 go 1.27.0
 
 require (
-	github.com/containeroo/tinyflags v0.3.0
+	github.com/containeroo/tinyflags v0.4.1
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/kumbuka-me/kumbuka v0.44.0
 	github.com/kumbuka-me/sdk v0.27.0
