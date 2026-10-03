@@ -1,6 +1,7 @@
 package site
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/fs"
@@ -41,12 +42,12 @@ type brandingData struct {
 }
 
 // prepareOutput publishes runtime, source, and branding assets into an empty staged output directory.
-func (b *builder) prepareOutput(config Config, basePath string, renderer *md.Renderer) (brandingData, error) {
+func (b *builder) prepareOutput(ctx context.Context, config Config, basePath string, renderer *md.Renderer) (brandingData, error) {
 	if err := b.copyBuildAssets(config); err != nil {
 		return brandingData{}, err
 	}
 
-	if err := copyPluginAssets(renderer, config, basePath); err != nil {
+	if err := copyPluginAssets(ctx, renderer, config, basePath); err != nil {
 		return brandingData{}, err
 	}
 

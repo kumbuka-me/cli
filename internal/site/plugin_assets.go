@@ -1,6 +1,7 @@
 package site
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"html/template"
@@ -12,7 +13,7 @@ import (
 )
 
 // copyPluginAssets publishes active browser plugin assets and self-contained sandbox frames for static hosting.
-func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) error {
+func copyPluginAssets(ctx context.Context, renderer *md.Renderer, config Config, basePath string) error {
 	manager := renderer.PluginManager()
 	if manager == nil {
 		return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), nil)
@@ -20,7 +21,7 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 
 	modules := manager.BrowserModules()
 	if len(modules) == 0 {
-		return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), []byte(pluginbrowser.PresentationStyles(manager)))
+		return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), []byte(pluginbrowser.PresentationStyles(ctx, manager)))
 	}
 
 	origin, err := staticPluginOrigin(config.SiteURL)
@@ -30,13 +31,13 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 	prefix := publicURLPath(basePath, "plugins")
 	runtime := publicURLPath(basePath, "assets/js/plugins/frame.js")
 	for _, module := range modules {
-		names, err := manager.BrowserAssetNames(module.PluginID, module.Digest)
+		names, err := manager.BrowserAssetNames(ctx, module.PluginID, module.Digest)
 		if err != nil {
 			return err
 		}
 		directory := filepath.Join(config.OutputDir, "plugins", module.PluginID, module.Digest)
 		for _, name := range names {
-			data, err := manager.BrowserAsset(module.PluginID, module.Digest, name)
+			data, err := manager.BrowserAsset(ctx, module.PluginID, module.Digest, name)
 			if err != nil {
 				return err
 			}
@@ -52,7 +53,7 @@ func copyPluginAssets(renderer *md.Renderer, config Config, basePath string) err
 			return err
 		}
 	}
-	return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), []byte(pluginbrowser.PresentationStyles(manager)))
+	return writeFile(filepath.Join(config.OutputDir, "plugins", "styles.css"), []byte(pluginbrowser.PresentationStyles(ctx, manager)))
 }
 
 // staticPluginOrigin returns the absolute deployment origin required by browser-plugin frame policies.

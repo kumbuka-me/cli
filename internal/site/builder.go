@@ -196,7 +196,7 @@ func (b *builder) buildInto(ctx context.Context, config Config) (buildResult, er
 		return buildResult{}, err
 	}
 
-	branding, err := b.prepareOutput(plan.config, plan.basePath, renderer)
+	branding, err := b.prepareOutput(ctx, plan.config, plan.basePath, renderer)
 	if err != nil {
 		return buildResult{}, err
 	}
@@ -372,7 +372,7 @@ func renderPage(
 	plan buildPlan,
 ) (renderedPage, error) {
 	options := md.DefaultOptions()
-	options.WikiLinkPrefix = plan.basePath
+	options.RoutePrefix = plan.basePath
 	resolveWiki := func(target string) string {
 		normalized := md.Slug(target)
 		if route, found := plan.wikiTargets[normalized]; found {
@@ -385,14 +385,12 @@ func renderPage(
 	if page.Route != "" {
 		children = navigation.Children(plan.navigationTree, page.Route)
 	}
-	pageNavigation := plugincap.Navigation(children, func(slug string) string {
-		return pageURL(plan.basePath, slug)
-	})
+	pageNavigation := plugincap.Navigation(children, plan.basePath)
 	rendered, err := renderer.RenderPageResolvedWithFunctions(
 		page.Markdown,
 		resolveWiki,
 		options,
-		md.Functions{Context: ctx, Capabilities: plugincap.Capabilities(nil, pageNavigation, iconCatalog)},
+		md.Functions{Context: ctx, Capabilities: plugincap.Capabilities(nil, pageNavigation, plan.basePath, iconCatalog)},
 	)
 	if err != nil {
 		return renderedPage{}, fmt.Errorf("render %s: %w", page.SourcePath, err)
