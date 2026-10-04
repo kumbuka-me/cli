@@ -270,7 +270,7 @@ func planBuild(config Config) (buildPlan, error) {
 
 // loadThemeData validates the selected theme and serializes the available theme catalog.
 func loadThemeData(theme string) (template.JS, error) {
-	availableThemes, err := themes.Load("")
+	availableThemes, err := themes.Load(themes.Files, "")
 	if err != nil {
 		return "", err
 	}
