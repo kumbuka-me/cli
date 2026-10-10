@@ -9,7 +9,7 @@ require (
 	github.com/kumbuka-me/sdk v0.27.1
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
-	golang.org/x/net v0.60.0
+	golang.org/x/net v0.61.0
 )
 
 require (
@@ -26,6 +26,6 @@ require (
 	github.com/yuin/goldmark/v2 v2.1.6 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/sync v0.24.0 // indirect
-	golang.org/x/sys v0.48.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 )
