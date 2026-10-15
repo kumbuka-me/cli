@@ -3,7 +3,7 @@ module github.com/kumbuka-me/cli
 go 1.27.0
 
 require (
-	github.com/containeroo/appkit v0.4.0
+	github.com/containeroo/appkit v0.6.0
 	github.com/containeroo/tinyflags v0.5.0
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/kumbuka-me/kumbuka v0.54.3
