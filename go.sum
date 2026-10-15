@@ -1,7 +1,5 @@
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
-github.com/containeroo/appkit v0.3.0 h1:Jb5ZhSH80vlzaA+1I2Z0G5d1j+uGs1oexGgmJEhP728=
-github.com/containeroo/appkit v0.3.0/go.mod h1:PavEm/5jxpuaJZqrWw6HH/EY/r7fpZUCYo7nKRGSOT4=
 github.com/containeroo/appkit v0.4.0 h1:o9nViA0xtUZyYpdxHNqhFjwAKTLntuaA73QEj/F5Qjo=
 github.com/containeroo/appkit v0.4.0/go.mod h1:PavEm/5jxpuaJZqrWw6HH/EY/r7fpZUCYo7nKRGSOT4=
 github.com/containeroo/httpkit v0.0.3 h1:msDWnXu3fhAja9aOXfP6vw6GO803zHW9/lgp+cqOQQU=
