@@ -1,7 +1,7 @@
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
-github.com/containeroo/appkit v0.6.0 h1:YPuoSdgPHo47meGaK1FI4bHibSl3Hiw61tfkipZE3FQ=
-github.com/containeroo/appkit v0.6.0/go.mod h1:PavEm/5jxpuaJZqrWw6HH/EY/r7fpZUCYo7nKRGSOT4=
+github.com/containeroo/appkit v0.6.2 h1:IZGeeOvdPq7uxA1n0boRxwd/60ZyBqHkAOKbNvs27CI=
+github.com/containeroo/appkit v0.6.2/go.mod h1:PavEm/5jxpuaJZqrWw6HH/EY/r7fpZUCYo7nKRGSOT4=
 github.com/containeroo/httpkit v0.0.3 h1:msDWnXu3fhAja9aOXfP6vw6GO803zHW9/lgp+cqOQQU=
 github.com/containeroo/httpkit v0.0.3/go.mod h1:3O+ot7igC5SMFIsVu7nZmBNewa4VbigOOu47eGR9qaI=
 github.com/containeroo/tinyflags v0.5.0 h1:FIt3Vwmwx2w7Lu8bUFTGGmWEx46zDybWnx3nCzT1nEc=
@@ -19,8 +19,8 @@ github.com/jackc/puddle/v2 v2.2.2 h1:PR8nw+E/1w0GLuRFSmiioY6UooMp6KJv0/61nB7icHo
 github.com/jackc/puddle/v2 v2.2.2/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
 github.com/kaugesaar/lucide-go v0.35.0 h1:tT5s2P4echUAOtKfyn/crRISfEaBg6fTx/q181iw7Uc=
 github.com/kaugesaar/lucide-go v0.35.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
-github.com/kumbuka-me/kumbuka v0.55.0 h1:yNyvbrcKVc01CHfdGAl/Q526hHmzrQLANJtuLnrSuHU=
-github.com/kumbuka-me/kumbuka v0.55.0/go.mod h1:BvyiMHhXNW6/GlcLvDf8Oy/nn8GW5aB/6MI2DrJ1KN0=
+github.com/kumbuka-me/kumbuka v0.57.3 h1:hinZHJy9tTWCVNrRlWdGydFCo6DxrK6EUNeOLkzsUeo=
+github.com/kumbuka-me/kumbuka v0.57.3/go.mod h1:tQw+KvF7fEqIN7XMyhc/viEsPuFoizoP33LnviY58Eg=
 github.com/kumbuka-me/sdk v0.27.1 h1:WpaZEmZ7lmuygo75RO9Qb56kcsaZ3scOodTArquilYc=
 github.com/kumbuka-me/sdk v0.27.1/go.mod h1:eK0CvV39dA13jn09dKgmBsbK3lsfr72+Bwp4Iit+TaI=
 github.com/microcosm-cc/bluemonday v1.0.27 h1:MpEUotklkwCSLeH+Qdx1VJgNqLlpY2KXwXFM08ygZfk=
