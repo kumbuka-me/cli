@@ -77,3 +77,20 @@ func TestRunPrintsCommandExecutionErrors(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, stderr.String(), "parse "+filename)
 }
+
+func TestRunReportsUnknownBuildConfigurationFields(t *testing.T) {
+	t.Parallel()
+
+	filename := filepath.Join(t.TempDir(), "site.toml")
+	require.NoError(t, os.WriteFile(filename, []byte(`site_name = "Documentation"
+mermaid = true
+`), 0o600))
+
+	var stderr bytes.Buffer
+	err := Run(context.Background(), []string{"build", "--config", filename}, "test", io.Discard, &stderr)
+
+	require.Error(t, err)
+	assert.Contains(t, stderr.String(), "parse "+filename+": unknown TOML field:")
+	assert.Contains(t, stderr.String(), "line 2, column 1: \"mermaid\"")
+	assert.NotContains(t, stderr.String(), "fields in the document are missing")
+}

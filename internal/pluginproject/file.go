@@ -12,6 +12,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/kumbuka-me/cli/internal/tomlerror"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -65,7 +66,7 @@ func Load(filename string) (File, error) {
 	decoder := toml.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&file); err != nil {
-		return File{}, fmt.Errorf("parse %s: %w", filename, err)
+		return File{}, fmt.Errorf("parse %s: %w", filename, tomlerror.Explain(err))
 	}
 	if file.Format != fileFormat {
 		return File{}, fmt.Errorf("unsupported %s format %d", filename, file.Format)

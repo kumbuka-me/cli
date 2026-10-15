@@ -1,12 +1,14 @@
 package site
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
 	"github.com/kumbuka-me/kumbuka/pkg/icons"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -361,4 +363,24 @@ hover_text = " {{label }} | {{description}} "
 
 		assert.ErrorContains(t, validateExternalLinks(config.ExternalLinks), "hover_effect")
 	})
+}
+
+func TestConfigReportsUnknownTOMLFields(t *testing.T) {
+	t.Parallel()
+
+	filename := filepath.Join(t.TempDir(), "site.toml")
+	require.NoError(t, os.WriteFile(filename, []byte(`site_name = "Example"
+mermaid = true
+unused_option = "value"
+`), 0o600))
+
+	_, err := loadConfig(filename, true)
+
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "parse "+filename+": unknown TOML fields:")
+	assert.ErrorContains(t, err, "line 2, column 1: \"mermaid\"")
+	assert.ErrorContains(t, err, "line 3, column 1: \"unused_option\"")
+
+	var original *toml.StrictMissingError
+	assert.True(t, errors.As(err, &original))
 }

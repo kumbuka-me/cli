@@ -1,10 +1,12 @@
 package pluginproject
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/pelletier/go-toml/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -86,4 +88,29 @@ func TestSaveDoesNotMutateCaller(t *testing.T) {
 	assert.Equal(t, "z.example", loaded.Plugins[1].ID)
 	assert.Equal(t, "example/z", loaded.Plugins[1].Repository)
 	assert.Equal(t, "1.0.0", loaded.Plugins[1].Version)
+}
+
+func TestProjectFileReportsUnknownTOMLFields(t *testing.T) {
+	t.Parallel()
+
+	filename := filepath.Join(t.TempDir(), DefaultFile)
+	require.NoError(t, os.WriteFile(filename, []byte(`format = 1
+unknown_root = true
+
+[[plugin]]
+id = "io.example"
+repository = "example/plugins"
+version = "1.0.0"
+unknown_plugin = true
+`), 0o600))
+
+	_, err := Load(filename)
+
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "parse "+filename+": unknown TOML fields:")
+	assert.ErrorContains(t, err, "line 2, column 1: \"unknown_root\"")
+	assert.ErrorContains(t, err, "line 8, column 1: \"plugin.unknown_plugin\"")
+
+	var original *toml.StrictMissingError
+	assert.True(t, errors.As(err, &original))
 }

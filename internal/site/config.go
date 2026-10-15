@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/kumbuka-me/cli/internal/pluginproject"
+	"github.com/kumbuka-me/cli/internal/tomlerror"
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
 	"github.com/kumbuka-me/kumbuka/pkg/themes"
 	"github.com/pelletier/go-toml/v2"
@@ -97,7 +98,7 @@ func loadConfig(filename string, required bool) (Config, error) {
 	defer file.Close() // nolint:errcheck
 
 	if err := toml.NewDecoder(file).DisallowUnknownFields().Decode(&config); err != nil {
-		return Config{}, fmt.Errorf("parse %s: %w", filename, err)
+		return Config{}, fmt.Errorf("parse %s: %w", filename, tomlerror.Explain(err))
 	}
 
 	config.resolvePaths(filepath.Dir(filename))
