@@ -2,6 +2,7 @@
 package build
 
 import (
+	appkitconfig "github.com/containeroo/appkit/config"
 	appkitlogging "github.com/containeroo/appkit/logging"
 	"github.com/containeroo/tinyflags"
 	"github.com/kumbuka-me/cli/internal/site"
@@ -53,19 +54,11 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 	robots := flags.String("robots", string(defaults.RobotsPolicy), "robots.txt policy").
 		Choices(string(domain.RobotsPolicyAllow), string(domain.RobotsPolicyDisallow), string(domain.RobotsPolicyNone)).
 		Placeholder("POLICY")
-	logFormat := tinyflags.Enum(
-		flags,
-		"log-format",
-		appkitlogging.LogFormatJSON,
-		"Log output format",
-		appkitlogging.LogFormatText,
-		appkitlogging.LogFormatJSON,
-	).
-		Short("l").
-		Placeholder("FORMAT").
-		Value()
+	var logFormat appkitlogging.LogFormat
+	finishLogFormat := appkitconfig.RegisterLogFormat(flags, &logFormat)
 
 	return func() (Config, error) {
+		finishLogFormat()
 		cfg, err := site.LoadConfig(*configPath.Value(), configPath.Changed())
 		if err != nil {
 			return Config{}, err
@@ -110,7 +103,7 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 
 		return Config{
 			Site:      cfg,
-			LogFormat: *logFormat,
+			LogFormat: logFormat,
 		}, nil
 	}
 }

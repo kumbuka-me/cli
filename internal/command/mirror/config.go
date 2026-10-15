@@ -2,6 +2,7 @@
 package mirror
 
 import (
+	appkitconfig "github.com/containeroo/appkit/config"
 	"github.com/containeroo/tinyflags"
 
 	appkitlogging "github.com/containeroo/appkit/logging"
@@ -36,20 +37,10 @@ func BindFlags(flags *tinyflags.FlagSet) func() Config {
 	flags.StringVar(&cfg.OutputDir, "output", defaultOutputDir, "Directory that receives the Git-friendly mirror").
 		Placeholder("DIR").
 		Value()
-	logFormat := tinyflags.Enum(
-		flags,
-		"log-format",
-		appkitlogging.LogFormatJSON,
-		"Log output format",
-		appkitlogging.LogFormatText,
-		appkitlogging.LogFormatJSON,
-	).
-		Short("l").
-		Placeholder("FORMAT").
-		Value()
+	finishLogFormat := appkitconfig.RegisterLogFormat(flags, &cfg.LogFormat)
 
 	return func() Config {
-		cfg.LogFormat = *logFormat
+		finishLogFormat()
 		return cfg
 	}
 }
