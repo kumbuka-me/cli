@@ -9,9 +9,10 @@ import (
 	"testing"
 
 	"github.com/kumbuka-me/cli/internal/site"
-	"github.com/kumbuka-me/kumbuka/pkg/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	appkitlogging "github.com/containeroo/appkit/logging"
 )
 
 func TestRunLogsOverrides(t *testing.T) {
@@ -31,7 +32,7 @@ func TestRunLogsOverrides(t *testing.T) {
 	var stdout bytes.Buffer
 	err := Run(
 		context.Background(),
-		Config{Site: config, LogFormat: logging.LogFormatJSON},
+		Config{Site: config, LogFormat: appkitlogging.LogFormatJSON},
 		map[string]any{"site-name": "Example Docs"},
 		&stdout,
 	)
@@ -64,7 +65,7 @@ func TestRunReturnsOutputWriteError(t *testing.T) {
 	config.SourceDir = source
 	config.OutputDir = output
 
-	err := Run(context.Background(), Config{Site: config, LogFormat: logging.LogFormatJSON}, nil, failingWriter{})
+	err := Run(context.Background(), Config{Site: config, LogFormat: appkitlogging.LogFormatJSON}, nil, failingWriter{})
 
 	require.ErrorContains(t, err, "write build result")
 }

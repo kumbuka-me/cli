@@ -5,12 +5,13 @@ import (
 	"io"
 
 	mirrorexport "github.com/kumbuka-me/cli/internal/mirror"
-	"github.com/kumbuka-me/kumbuka/pkg/logging"
+
+	appkitlogging "github.com/containeroo/appkit/logging"
 )
 
 // Run opens PostgreSQL and writes a complete mirror into the configured output directory.
 func Run(ctx context.Context, cfg Config, stdout io.Writer) error {
-	logger := logging.Setup(cfg.LogFormat, false, stdout).With("component", "mirror")
+	logger := appkitlogging.Setup(cfg.LogFormat, false, stdout).With("component", "mirror")
 	database, err := mirrorexport.OpenPostgres(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return err

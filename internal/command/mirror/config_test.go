@@ -3,8 +3,8 @@ package mirror
 import (
 	"testing"
 
+	appkitlogging "github.com/containeroo/appkit/logging"
 	"github.com/containeroo/tinyflags"
-	"github.com/kumbuka-me/kumbuka/pkg/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -24,5 +24,5 @@ func TestFlags(t *testing.T) {
 	config := resolve()
 	assert.Equal(t, "postgres://user:pass@localhost/kumbuka", config.DatabaseURL)
 	assert.Equal(t, "snapshot", config.OutputDir)
-	assert.Equal(t, logging.LogFormatJSON, config.LogFormat)
+	assert.Equal(t, appkitlogging.LogFormatJSON, config.LogFormat)
 }

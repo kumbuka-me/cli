@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	appkitlogging "github.com/containeroo/appkit/logging"
 	"github.com/containeroo/tinyflags"
 	"github.com/kumbuka-me/cli/internal/site"
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
-	"github.com/kumbuka-me/kumbuka/pkg/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -53,7 +53,7 @@ sidebar_width = 360
 	assert.Equal(t, domain.NavigationDensityComfortable, cfg.Site.NavigationDensity)
 	assert.Equal(t, 320, cfg.Site.SidebarWidth)
 	assert.Equal(t, domain.RobotsPolicyDisallow, cfg.Site.RobotsPolicy)
-	assert.Equal(t, logging.LogFormatText, cfg.LogFormat)
+	assert.Equal(t, appkitlogging.LogFormatText, cfg.LogFormat)
 }
 
 func TestFlagsAllowDefaults(t *testing.T) {
@@ -68,7 +68,7 @@ func TestFlagsAllowDefaults(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, site.DefaultConfig(), config.Site)
-	assert.Equal(t, logging.LogFormatJSON, config.LogFormat)
+	assert.Equal(t, appkitlogging.LogFormatJSON, config.LogFormat)
 }
 
 func TestPluginsFlagOverridesConfigRelativeDefault(t *testing.T) {

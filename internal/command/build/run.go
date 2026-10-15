@@ -6,12 +6,13 @@ import (
 	"io"
 
 	"github.com/kumbuka-me/cli/internal/site"
-	"github.com/kumbuka-me/kumbuka/pkg/logging"
+
+	appkitlogging "github.com/containeroo/appkit/logging"
 )
 
 // Run builds one static documentation site.
 func Run(ctx context.Context, cfg Config, overrides map[string]any, stdout io.Writer) error {
-	logger := logging.Setup(cfg.LogFormat, false, stdout)
+	logger := appkitlogging.Setup(cfg.LogFormat, false, stdout)
 	setupLogger := logger.With("component", "setup")
 
 	if len(overrides) > 0 {

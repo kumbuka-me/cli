@@ -3,7 +3,8 @@ package mirror
 
 import (
 	"github.com/containeroo/tinyflags"
-	"github.com/kumbuka-me/kumbuka/pkg/logging"
+
+	appkitlogging "github.com/containeroo/appkit/logging"
 )
 
 const defaultOutputDir = "kumbuka-mirror"
@@ -15,7 +16,7 @@ type Config struct {
 	// OutputDir receives the generated mirror snapshot.
 	OutputDir string
 	// LogFormat selects text or JSON command logging.
-	LogFormat logging.LogFormat
+	LogFormat appkitlogging.LogFormat
 }
 
 // BindFlags registers mirror flags and returns the parsed configuration.
@@ -24,7 +25,7 @@ func BindFlags(flags *tinyflags.FlagSet) func() Config {
 
 	cfg := Config{
 		OutputDir: defaultOutputDir,
-		LogFormat: logging.LogFormatText,
+		LogFormat: appkitlogging.LogFormatText,
 	}
 
 	flags.StringVar(&cfg.DatabaseURL, "database-url", "", "PostgreSQL connection URL").
@@ -38,10 +39,10 @@ func BindFlags(flags *tinyflags.FlagSet) func() Config {
 	logFormat := tinyflags.Enum(
 		flags,
 		"log-format",
-		logging.LogFormatJSON,
+		appkitlogging.LogFormatJSON,
 		"Log output format",
-		logging.LogFormatText,
-		logging.LogFormatJSON,
+		appkitlogging.LogFormatText,
+		appkitlogging.LogFormatJSON,
 	).
 		Short("l").
 		Placeholder("FORMAT").

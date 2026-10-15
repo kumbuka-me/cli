@@ -2,10 +2,10 @@
 package build
 
 import (
+	appkitlogging "github.com/containeroo/appkit/logging"
 	"github.com/containeroo/tinyflags"
 	"github.com/kumbuka-me/cli/internal/site"
 	"github.com/kumbuka-me/kumbuka/pkg/domain"
-	"github.com/kumbuka-me/kumbuka/pkg/logging"
 )
 
 // Config contains the resolved build command configuration.
@@ -13,7 +13,7 @@ type Config struct {
 	// Site contains the effective static-site configuration.
 	Site site.Config
 	// LogFormat selects text or JSON command logging.
-	LogFormat logging.LogFormat
+	LogFormat appkitlogging.LogFormat
 }
 
 // BindFlags registers build flags and returns a resolver for the effective configuration.
@@ -56,10 +56,10 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 	logFormat := tinyflags.Enum(
 		flags,
 		"log-format",
-		logging.LogFormatJSON,
+		appkitlogging.LogFormatJSON,
 		"Log output format",
-		logging.LogFormatText,
-		logging.LogFormatJSON,
+		appkitlogging.LogFormatText,
+		appkitlogging.LogFormatJSON,
 	).
 		Short("l").
 		Placeholder("FORMAT").
