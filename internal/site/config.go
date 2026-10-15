@@ -88,6 +88,7 @@ func loadConfig(filename string, required bool) (Config, error) {
 	config := defaultConfig()
 	file, err := os.Open(filename)
 	if errors.Is(err, os.ErrNotExist) && !required {
+		config.resolvePaths(filepath.Dir(filename))
 		return config, nil
 	}
 	if err != nil {
@@ -99,7 +100,7 @@ func loadConfig(filename string, required bool) (Config, error) {
 		return Config{}, fmt.Errorf("parse %s: %w", filename, err)
 	}
 
-	config.resolveAssetPaths(filepath.Dir(filename))
+	config.resolvePaths(filepath.Dir(filename))
 	config = normalizeConfig(config)
 	if err := validateConfig(config); err != nil {
 		return Config{}, err
@@ -118,12 +119,13 @@ func ValidateSidebarWidth(width int) error {
 	return validateSidebarWidth(width)
 }
 
-// resolveAssetPaths resolves user-supplied branding and asset paths relative to the config file.
-func (c *Config) resolveAssetPaths(configDir string) {
+// resolvePaths resolves config-owned filesystem paths relative to the config file.
+func (c *Config) resolvePaths(configDir string) {
 	resolveRelativePath(configDir, &c.Logo)
 	resolveRelativePath(configDir, &c.Favicon)
 	resolveRelativePath(configDir, &c.FaviconICO)
 	resolveRelativePath(configDir, &c.AssetsDir)
+	resolveRelativePath(configDir, &c.PluginsFile)
 }
 
 // resolveRelativePath resolves one non-empty relative path against the supplied directory.

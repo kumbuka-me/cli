@@ -65,6 +65,31 @@ assets_dir = "assets"
 	assert.Equal(t, filepath.Join(root, "assets"), config.AssetsDir)
 }
 
+func TestPluginsFileDefaultsBesideConfig(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	configPath := filepath.Join(root, "kumbuka-site.toml")
+	require.NoError(t, os.WriteFile(configPath, nil, 0o600))
+
+	config, err := loadConfig(configPath, true)
+
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(root, ".kumbukaplugins"), config.PluginsFile)
+}
+
+func TestPluginsFileDefaultsBesideMissingOptionalConfig(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	configPath := filepath.Join(root, "kumbuka-site.toml")
+
+	config, err := loadConfig(configPath, false)
+
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(root, ".kumbukaplugins"), config.PluginsFile)
+}
+
 func TestBrandingValidation(t *testing.T) {
 	t.Parallel()
 

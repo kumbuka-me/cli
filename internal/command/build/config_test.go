@@ -71,6 +71,24 @@ func TestFlagsAllowDefaults(t *testing.T) {
 	assert.Equal(t, logging.LogFormatJSON, config.LogFormat)
 }
 
+func TestPluginsFlagOverridesConfigRelativeDefault(t *testing.T) {
+	t.Parallel()
+
+	root := t.TempDir()
+	configPath := filepath.Join(root, "kumbuka-site.toml")
+	require.NoError(t, os.WriteFile(configPath, nil, 0o600))
+	override := filepath.Join(t.TempDir(), "plugins.toml")
+
+	flags := tinyflags.NewFlagSet("kumbuka build", tinyflags.ContinueOnError)
+	resolve := BindFlags(flags)
+	require.NoError(t, flags.Parse([]string{"--config", configPath, "--plugins", override}))
+
+	config, err := resolve()
+
+	require.NoError(t, err)
+	assert.Equal(t, override, config.Site.PluginsFile)
+}
+
 func TestFlagsValidateValues(t *testing.T) {
 	t.Parallel()
 
