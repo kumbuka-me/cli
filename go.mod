@@ -10,7 +10,7 @@ require (
 	github.com/kumbuka-me/sdk v0.27.1
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
-	golang.org/x/net v0.61.0
+	golang.org/x/net v0.62.0
 )
 
 require (
