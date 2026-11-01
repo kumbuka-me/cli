@@ -7,7 +7,7 @@ require (
 	github.com/containeroo/tinyflags v0.6.0
 	github.com/jackc/pgx/v5 v5.12.0
 	github.com/kumbuka-me/kumbuka v0.57.11
-	github.com/kumbuka-me/sdk v0.27.1
+	github.com/kumbuka-me/sdk v0.27.2
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/net v0.62.0
@@ -25,7 +25,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/tetratelabs/wazero v1.12.0 // indirect
 	github.com/yuin/goldmark/v2 v2.1.13 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
+	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
