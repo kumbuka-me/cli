@@ -115,13 +115,10 @@ func resolveBundled(bundled fs.FS, dependency Dependency) (Resolved, bool, error
 // resolveRemote loads a validated cache entry or downloads and caches the pinned release.
 func (r *Resolver) resolveRemote(ctx context.Context, dependency Dependency) (Resolved, error) {
 	cacheFile := r.cacheFilename(dependency)
-	if archive, err := os.ReadFile(cacheFile); err == nil {
+	if archive, err := readCachedArchive(cacheFile); err == nil {
 		item, validationErr := resolvedPackage(dependency, archive)
 		if validationErr == nil {
 			return item, nil
-		}
-		if removeErr := os.Remove(cacheFile); removeErr != nil && !errors.Is(removeErr, os.ErrNotExist) {
-			return Resolved{}, fmt.Errorf("remove invalid cached plugin %s: %w", dependency.ID, removeErr)
 		}
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return Resolved{}, fmt.Errorf("read cached plugin %s: %w", dependency.ID, err)
@@ -139,6 +136,16 @@ func (r *Resolver) resolveRemote(ctx context.Context, dependency Dependency) (Re
 		return Resolved{}, fmt.Errorf("cache plugin %s: %w", dependency.ID, err)
 	}
 	return item, nil
+}
+
+// readCachedArchive reads at most one byte beyond the package limit so validation can reject an oversized entry.
+func readCachedArchive(filename string) ([]byte, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = file.Close() }()
+	return io.ReadAll(io.LimitReader(file, pluginpackage.MaxArchiveBytes+1))
 }
 
 // cacheFilename returns the repository-scoped cache path for one pinned dependency.

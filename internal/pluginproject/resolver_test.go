@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"testing"
 	"testing/fstest"
 
+	"github.com/kumbuka-me/sdk/pluginpackage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -203,4 +205,13 @@ permissions: []
 	require.Len(t, resolved.Manifest.Modules[0].Fields[1].Columns, 2)
 	assert.Equal(t, "color", resolved.Manifest.Modules[0].Fields[1].Columns[1].Type)
 	assert.Equal(t, output.Bytes(), resolved.Archive)
+}
+
+func TestReadCachedArchiveBoundsOversizedFiles(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "plugin.kumbukaplugin")
+	require.NoError(t, os.WriteFile(path, nil, 0o600))
+	require.NoError(t, os.Truncate(path, pluginpackage.MaxArchiveBytes*2))
+	data, err := readCachedArchive(path)
+	require.NoError(t, err)
+	require.Len(t, data, pluginpackage.MaxArchiveBytes+1)
 }
