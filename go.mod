@@ -6,8 +6,8 @@ require (
 	github.com/containeroo/appkit v0.7.0
 	github.com/containeroo/tinyflags v0.6.0
 	github.com/jackc/pgx/v5 v5.12.0
-	github.com/kumbuka-me/kumbuka v0.61.0
-	github.com/kumbuka-me/sdk v0.27.2
+	github.com/kumbuka-me/kumbuka v0.63.0
+	github.com/kumbuka-me/sdk v0.29.0
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/net v0.62.0
