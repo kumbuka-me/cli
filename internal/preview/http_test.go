@@ -75,7 +75,7 @@ func TestEventsNotifyConnectedBrowser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() // nolint:errcheck
 	if response.Header.Get("Content-Type") != "text/event-stream" {
 		t.Fatalf("unexpected content type: %s", response.Header.Get("Content-Type"))
 	}

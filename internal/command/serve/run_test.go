@@ -51,7 +51,7 @@ func TestRunServesExistingFilesWithoutBuild(t *testing.T) {
 
 	response, err := http.Get(address)
 	require.NoError(t, err)
-	defer response.Body.Close()
+	defer response.Body.Close() // nolint:errcheck
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	cancel()
 	require.NoError(t, <-finished)
