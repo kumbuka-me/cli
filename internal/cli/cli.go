@@ -11,6 +11,7 @@ import (
 	"github.com/kumbuka-me/cli/internal/command/build"
 	"github.com/kumbuka-me/cli/internal/command/mirror"
 	"github.com/kumbuka-me/cli/internal/command/plugins"
+	"github.com/kumbuka-me/cli/internal/command/serve"
 )
 
 // Run parses and executes one Kumbuka CLI command.
@@ -33,6 +34,12 @@ func Run(
 		}
 
 		return build.Run(ctx, cfg, buildCommand.Overrides().Values(), stdout)
+	})
+
+	serveCommand := root.Command("serve", "Build, serve, and watch a local static-site preview")
+	resolveServeConfig := serve.BindFlags(serveCommand.FlagSet)
+	serveCommand.Run(func(ctx context.Context) error {
+		return serve.Run(ctx, resolveServeConfig, stdout, stderr)
 	})
 
 	pluginsCommand := root.Command("plugins", "Manage static-site plugin dependencies").RequireCommand()

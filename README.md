@@ -11,6 +11,7 @@ The Kumbuka server and CLI are intentionally separate binaries:
 
 ```sh
 kumbuka-cli build --help
+kumbuka-cli serve --help
 kumbuka-cli mirror --help
 kumbuka-cli plugins --help
 ```
@@ -20,6 +21,29 @@ Build a static site:
 ```sh
 kumbuka-cli build --config kumbuka-site.toml
 ```
+
+Preview a local site with automatic rebuilds and browser reloads:
+
+```sh
+kumbuka-cli serve --config kumbuka-site.toml
+```
+
+By default, `serve` listens on `127.0.0.1:8000`, builds the site before serving,
+and watches Markdown, configuration, assets, and the plugin dependency file for
+changes. Successful rebuilds reload connected browsers. A failed rebuild leaves
+the last successfully generated site available. The preview retains the site's
+configured URL path (such as `/docs/`) and uses the local server as its origin,
+including for browser plugins. Restart the server after changing the configured
+site URL path.
+
+```sh
+kumbuka-cli serve --listen-address 127.0.0.1:9000
+kumbuka-cli serve --no-build --no-watch
+```
+
+`--no-build` serves existing generated files; it does not rewrite URLs or plugin
+frame policies, so use the default build-enabled mode for an accurate preview.
+The preview server is intended for local development, not production hosting.
 
 Manage the project's `.kumbukaplugins` file:
 

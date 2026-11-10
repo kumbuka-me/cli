@@ -77,6 +77,11 @@ func parseTemplate(pageTemplate, basePath string, iconCatalog *icons.Catalog) (*
 	)
 }
 
+// BasePath returns the generated URL prefix from a configured site URL.
+func BasePath(siteURL string) (string, error) {
+	return staticBasePath(siteURL)
+}
+
 // staticBasePath derives the generated URL prefix from the configured site URL.
 func staticBasePath(siteURL string) (string, error) {
 	if strings.TrimSpace(siteURL) == "" {

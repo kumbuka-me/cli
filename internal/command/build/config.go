@@ -11,6 +11,8 @@ import (
 
 // Config contains the resolved build command configuration.
 type Config struct {
+	// ConfigPath is the site configuration file used for rebuild watching.
+	ConfigPath string
 	// Site contains the effective static-site configuration.
 	Site site.Config
 	// LogFormat selects text or JSON command logging.
@@ -102,8 +104,9 @@ func BindFlags(flags *tinyflags.FlagSet) func() (Config, error) {
 		}
 
 		return Config{
-			Site:      cfg,
-			LogFormat: logFormat,
+			ConfigPath: *configPath.Value(),
+			Site:       cfg,
+			LogFormat:  logFormat,
 		}, nil
 	}
 }

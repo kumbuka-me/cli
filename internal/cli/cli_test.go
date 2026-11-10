@@ -22,7 +22,7 @@ func TestRunShowsRootHelpWhenCommandIsMissing(t *testing.T) {
 	assert.Contains(t, stderr.String(), "build")
 	assert.Contains(t, stderr.String(), "mirror")
 	assert.Contains(t, stderr.String(), "plugins")
-	assert.NotContains(t, stderr.String(), "serve")
+	assert.Contains(t, stderr.String(), "serve")
 }
 
 func TestRunShowsBuildHelp(t *testing.T) {
@@ -93,4 +93,17 @@ mermaid = true
 	assert.Contains(t, stderr.String(), "parse "+filename+": unknown TOML field:")
 	assert.Contains(t, stderr.String(), "line 2, column 1: \"mermaid\"")
 	assert.NotContains(t, stderr.String(), "fields in the document are missing")
+}
+
+func TestRunShowsServeHelp(t *testing.T) {
+	t.Parallel()
+
+	var stdout bytes.Buffer
+	err := Run(context.Background(), []string{"serve", "--help"}, "test", &stdout, io.Discard)
+
+	require.NoError(t, err)
+	assert.Contains(t, stdout.String(), "--listen-address")
+	assert.Contains(t, stdout.String(), "--no-build")
+	assert.Contains(t, stdout.String(), "--no-watch")
+	assert.Contains(t, stdout.String(), "--config")
 }
