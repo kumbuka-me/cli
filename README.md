@@ -22,6 +22,21 @@ Build a static site:
 kumbuka-cli build --config kumbuka-site.toml
 ```
 
+For documents using the Mermaid plugin, static builds pre-render ordinary `mermaid`
+fences to light/dark SVG assets. Install the matching Mermaid CLI **12.0.0**
+(`npm install -g @mermaid-js/mermaid-cli@12.0.0`) and ensure `mmdc` is
+on `PATH`, or set `MERMAID_CLI` to its executable path. No Mermaid CLI is
+required for sites without ordinary Mermaid diagrams.
+
+Add `{mermaid interactive="true"}` on a line after a Mermaid fence, or put
+`%% kumbuka-interactive: true` inside the fence, to retain the isolated
+Mermaid.js renderer on the generated site. Kumbuka's normal web application
+is unchanged and continues to render diagrams using Mermaid.js.
+
+Generated SVGs use content-addressed filenames and are reused across pages
+within a build. Static builds fail with a filename-specific error if Mermaid
+CLI is missing, the version does not match, or a diagram cannot be rendered.
+
 Preview a local site with automatic rebuilds and browser reloads:
 
 ```sh

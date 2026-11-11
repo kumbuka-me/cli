@@ -344,6 +344,10 @@ func renderPages(
 		if err != nil {
 			return nil, err
 		}
+		rendered.html, err = materializeMermaidSVGs(ctx, rendered.html, page.SourcePath, plan.config.OutputDir, plan.basePath)
+		if err != nil {
+			return nil, err
+		}
 		page.HTML = template.HTML(rendered.html)
 		page.SearchText = rendered.searchText
 		page.Contents = rendered.contents
