@@ -22,24 +22,6 @@ Build a static site:
 kumbuka-cli build --config kumbuka-site.toml
 ```
 
-Plugins may opt into **generic static browser exports** through an optional
-`assets/static-exports.json` declaration and `exportStatic` method in their
-existing browser module. During a build, exported passive SVGs are validated
-and published as content-addressed light/dark assets. Plugins can return
-`null` to retain their regular interactive browser rendering.
-
-Static export requires Node.js, a local Playwright installation, and Chromium
-in the site-build project when an exportable block is present:
-
-```sh
-npm install --save-dev playwright@1.65.0
-npx playwright install chromium
-```
-
-The CLI does not depend on Mermaid CLI or any plugin-specific command. The
-plugin's own browser script handles which content is eligible and how it renders.
-Sites without exportable plugin blocks do not start a headless browser.
-
 Preview a local site with automatic rebuilds and browser reloads:
 
 ```sh

@@ -14,13 +14,6 @@
       <link rel="stylesheet"
             href="{{ .BasePath }}plugins/styles.css"
             data-plugin-styles />
-      <style>
-        .kumbuka-static-illustration img { max-width: 100%; height: auto; }
-        .kumbuka-static-illustration__light { display: inline-block; }
-        .kumbuka-static-illustration__dark { display: none; }
-        :root[style*="color-scheme: dark"] .kumbuka-static-illustration__light { display: none; }
-        :root[style*="color-scheme: dark"] .kumbuka-static-illustration__dark { display: inline-block; }
-      </style>
       <script id="kumbuka-themes" type="application/json">{{ .ThemeData }}</script>
       <script src="{{ asseturl "js/theme-init.js" }}"></script>
       <script id="kumbuka-plugin-modules" type="application/json">{{ .PluginModules }}</script>

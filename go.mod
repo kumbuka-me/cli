@@ -7,7 +7,7 @@ require (
 	github.com/containeroo/tinyflags v0.11.0
 	github.com/jackc/pgx/v5 v5.13.0
 	github.com/kumbuka-me/kumbuka v0.65.0
-	github.com/kumbuka-me/sdk v0.30.1
+	github.com/kumbuka-me/sdk v0.31.0
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/net v0.62.0
