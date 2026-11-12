@@ -4,10 +4,10 @@ go 1.27.0
 
 require (
 	github.com/containeroo/appkit v0.7.0
-	github.com/containeroo/tinyflags v0.10.0
+	github.com/containeroo/tinyflags v0.11.0
 	github.com/jackc/pgx/v5 v5.13.0
 	github.com/kumbuka-me/kumbuka v0.65.0
-	github.com/kumbuka-me/sdk v0.29.1
+	github.com/kumbuka-me/sdk v0.30.1
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/net v0.62.0

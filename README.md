@@ -22,20 +22,23 @@ Build a static site:
 kumbuka-cli build --config kumbuka-site.toml
 ```
 
-For documents using the Mermaid plugin, static builds pre-render ordinary `mermaid`
-fences to light/dark SVG assets. Install the matching Mermaid CLI **12.0.0**
-(`npm install -g @mermaid-js/mermaid-cli@12.0.0`) and ensure `mmdc` is
-on `PATH`, or set `MERMAID_CLI` to its executable path. No Mermaid CLI is
-required for sites without ordinary Mermaid diagrams.
+Plugins may opt into **generic static browser exports** through an optional
+`assets/static-exports.json` declaration and `exportStatic` method in their
+existing browser module. During a build, exported passive SVGs are validated
+and published as content-addressed light/dark assets. Plugins can return
+`null` to retain their regular interactive browser rendering.
 
-Add `{mermaid interactive="true"}` on a line after a Mermaid fence, or put
-`%% kumbuka-interactive: true` inside the fence, to retain the isolated
-Mermaid.js renderer on the generated site. Kumbuka's normal web application
-is unchanged and continues to render diagrams using Mermaid.js.
+Static export requires Node.js, a local Playwright installation, and Chromium
+in the site-build project when an exportable block is present:
 
-Generated SVGs use content-addressed filenames and are reused across pages
-within a build. Static builds fail with a filename-specific error if Mermaid
-CLI is missing, the version does not match, or a diagram cannot be rendered.
+```sh
+npm install --save-dev playwright@1.65.0
+npx playwright install chromium
+```
+
+The CLI does not depend on Mermaid CLI or any plugin-specific command. The
+plugin's own browser script handles which content is eligible and how it renders.
+Sites without exportable plugin blocks do not start a headless browser.
 
 Preview a local site with automatic rebuilds and browser reloads:
 

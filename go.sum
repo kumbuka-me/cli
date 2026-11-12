@@ -4,8 +4,8 @@ github.com/containeroo/appkit v0.7.0 h1:IBIoCYKsJEbt8fnnkIR/IlOoJ4mmbVZSJqURGnox
 github.com/containeroo/appkit v0.7.0/go.mod h1:PavEm/5jxpuaJZqrWw6HH/EY/r7fpZUCYo7nKRGSOT4=
 github.com/containeroo/httpkit v0.1.1 h1:Mu6RJX84mY74vaj+vIEu3wqqIntTGMrmCTTmplJhd3s=
 github.com/containeroo/httpkit v0.1.1/go.mod h1:3O+ot7igC5SMFIsVu7nZmBNewa4VbigOOu47eGR9qaI=
-github.com/containeroo/tinyflags v0.10.0 h1:vDUcOc7NhOjf4sMdmfVIJbP5WHoWvjrHUOZNmMCgiOs=
-github.com/containeroo/tinyflags v0.10.0/go.mod h1:60uDGGWAChKE4VkKGpxSaFtxoJR/tRk28HdB6OvyR0Q=
+github.com/containeroo/tinyflags v0.11.0 h1:9et9d6E3MLjiWjDvf1Deds1GrxtZtg+pv4FH/ee+uO0=
+github.com/containeroo/tinyflags v0.11.0/go.mod h1:60uDGGWAChKE4VkKGpxSaFtxoJR/tRk28HdB6OvyR0Q=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gorilla/css v1.0.1 h1:ntNaBIghp6JmvWnxbZKANoLyuXTPZ4cAMlo6RyhlbO8=
 github.com/gorilla/css v1.0.1/go.mod h1:BvnYkspnSzMmwRK+b8/xgNPLiIuNZr6vbZBTPQ2A3b0=
@@ -21,8 +21,8 @@ github.com/kaugesaar/lucide-go v0.42.0 h1:5HWFWM3XiX93WGgvJNHF/M9HDJaPLAh25z7OZ3
 github.com/kaugesaar/lucide-go v0.42.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
 github.com/kumbuka-me/kumbuka v0.65.0 h1:uG33hqPFS+UmJ690OkpaMzr9kIU7EzhPjxNgNBbZCjI=
 github.com/kumbuka-me/kumbuka v0.65.0/go.mod h1:KMhlvQo+x4dLM/jJEdtwimh9xSgqbEvj7ENfQ8aJ3JQ=
-github.com/kumbuka-me/sdk v0.29.1 h1:Q+h/kra08fyXk0kF7KDkduvb+axHxVKt1i81fK5Kxdk=
-github.com/kumbuka-me/sdk v0.29.1/go.mod h1:JO5EgY4A+JeedjXcmVELmG6M7+EaiExLyyagM8/AQOE=
+github.com/kumbuka-me/sdk v0.30.1 h1:pyOg0gQQBLqWq1GiFrDaV0izc6hbQXQR7vyPrUarxwk=
+github.com/kumbuka-me/sdk v0.30.1/go.mod h1:tWUpyhjG8ms3sOi/wN+J9zM6Hhk4txRY9uqLHaaTXaE=
 github.com/microcosm-cc/bluemonday v1.0.27 h1:MpEUotklkwCSLeH+Qdx1VJgNqLlpY2KXwXFM08ygZfk=
 github.com/microcosm-cc/bluemonday v1.0.27/go.mod h1:jFi9vgW+H7c3V0lb6nR74Ib/DIB5OBs92Dimizgw2cA=
 github.com/pelletier/go-toml/v2 v2.4.3 h1:GTRvJQutkOSftxIFD5xw9aepkYNuPWmVJpffdDPYVpY=

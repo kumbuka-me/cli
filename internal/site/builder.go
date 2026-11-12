@@ -205,9 +205,15 @@ func (b *builder) buildInto(ctx context.Context, config Config) (buildResult, er
 		return buildResult{}, err
 	}
 
+	staticExporter, err := newStaticExporter(ctx, renderer.PluginManager(), plan.config.OutputDir, plan.basePath)
+	if err != nil {
+		return buildResult{}, err
+	}
+	defer func() { _ = staticExporter.Close() }()
+
 	common := commonViewData(plan, branding)
 	common.PluginModules = pluginModules
-	searchIndex, err := renderPages(ctx, renderer, iconCatalog, templates, plan, common)
+	searchIndex, err := renderPages(ctx, renderer, iconCatalog, templates, plan, common, staticExporter)
 	if err != nil {
 		return buildResult{}, err
 	}
@@ -328,6 +334,7 @@ func renderPages(
 	templates siteTemplates,
 	plan buildPlan,
 	common viewData,
+	staticExporter *staticExporter,
 ) ([]searchEntry, error) {
 	searchIndex := make([]searchEntry, 0, len(plan.pages))
 	for index := range plan.pages {
@@ -344,7 +351,7 @@ func renderPages(
 		if err != nil {
 			return nil, err
 		}
-		rendered.html, err = materializeMermaidSVGs(ctx, rendered.html, page.SourcePath, plan.config.OutputDir, plan.basePath)
+		rendered.html, err = staticExporter.materialize(ctx, rendered.html, page.SourcePath)
 		if err != nil {
 			return nil, err
 		}
