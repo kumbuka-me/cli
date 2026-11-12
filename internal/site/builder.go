@@ -14,6 +14,7 @@ import (
 	md "github.com/kumbuka-me/kumbuka/pkg/markdown"
 	"github.com/kumbuka-me/kumbuka/pkg/navigation"
 	"github.com/kumbuka-me/kumbuka/pkg/plugincap"
+	"github.com/kumbuka-me/kumbuka/pkg/renderartifact"
 	"github.com/kumbuka-me/kumbuka/pkg/themes"
 )
 
@@ -386,11 +387,14 @@ func renderPage(
 		children = navigation.Children(plan.navigationTree, page.Route)
 	}
 	pageNavigation := plugincap.Navigation(children, plan.basePath)
+	capabilities := plugincap.Capabilities(nil, pageNavigation, plan.basePath, iconCatalog)
+	capabilities["artifacts.put"] = renderartifact.FileCapability(plan.config.OutputDir, plan.basePath)
+	// Every static artifact is produced by the selected plugin through this generic host capability.
 	rendered, err := renderer.RenderPageResolvedWithFunctions(
 		page.Markdown,
 		resolveWiki,
 		options,
-		md.Functions{Context: ctx, Capabilities: plugincap.Capabilities(nil, pageNavigation, plan.basePath, iconCatalog)},
+		md.Functions{Context: ctx, Capabilities: capabilities},
 	)
 	if err != nil {
 		return renderedPage{}, fmt.Errorf("render %s: %w", page.SourcePath, err)

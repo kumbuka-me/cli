@@ -36,6 +36,7 @@ function applyTheme(catalog, select, fallbackTitle, title) {
     }
     document.documentElement.style.colorScheme = theme.color_scheme;
     document.documentElement.dataset.theme = theme.title;
+    document.documentElement.dataset.colorScheme = theme.color_scheme;
     if (select)
         select.value = theme.title;
 }

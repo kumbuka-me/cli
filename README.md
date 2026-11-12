@@ -22,6 +22,8 @@ Build a static site:
 kumbuka-cli build --config kumbuka-site.toml
 ```
 
+Plugins can publish passive SVGs during the build through the generic SDK artifact API. The CLI writes content-addressed images under `assets/rendered/`; only plugin content that explicitly requests browser interactivity needs a browser renderer at viewing time. No Node.js or Chromium installation is required by CLI users.
+
 Preview a local site with automatic rebuilds and browser reloads:
 
 ```sh
