@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/containeroo/appkit v0.7.0
-	github.com/containeroo/tinyflags v0.11.0
+	github.com/containeroo/tinyflags v0.12.0
 	github.com/jackc/pgx/v5 v5.13.0
 	github.com/kumbuka-me/kumbuka v0.66.2
 	github.com/kumbuka-me/sdk v0.32.0
