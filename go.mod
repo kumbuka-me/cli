@@ -3,7 +3,7 @@ module github.com/kumbuka-me/cli
 go 1.27.0
 
 require (
-	github.com/containeroo/appkit v0.8.0
+	github.com/containeroo/appkit v0.8.1
 	github.com/containeroo/tinyflags v0.12.0
 	github.com/jackc/pgx/v5 v5.13.0
 	github.com/kumbuka-me/kumbuka v0.66.2
@@ -15,7 +15,7 @@ require (
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/containeroo/httpkit v0.1.1 // indirect
+	github.com/containeroo/httpkit v0.2.0 // indirect
 	github.com/go-quickjs/go-intl v0.9.0 // indirect
 	github.com/go-quickjs/go-quickjs v0.37.3 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
