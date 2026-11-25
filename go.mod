@@ -6,7 +6,7 @@ require (
 	github.com/containeroo/appkit v0.8.1
 	github.com/containeroo/tinyflags v0.12.0
 	github.com/jackc/pgx/v5 v5.13.0
-	github.com/kumbuka-me/kumbuka v0.67.1
+	github.com/kumbuka-me/kumbuka v0.69.0
 	github.com/kumbuka-me/sdk v0.32.0
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/stretchr/testify v1.12.1
@@ -17,7 +17,7 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/containeroo/httpkit v0.2.0 // indirect
 	github.com/go-quickjs/go-intl v0.9.0 // indirect
-	github.com/go-quickjs/go-quickjs v0.40.0 // indirect
+	github.com/go-quickjs/go-quickjs v0.44.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
