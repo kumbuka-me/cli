@@ -190,6 +190,12 @@ func validateAssetPaths(config Config) error {
 	if err := validateConfiguredPath("favicon_ico", config.FaviconICO, config.OutputDir, false); err != nil {
 		return err
 	}
+	if err := validateConfiguredPath("custom_css", config.CustomCSS, config.OutputDir, false); err != nil {
+		return err
+	}
+	if config.CustomCSS != "" && !strings.EqualFold(filepath.Ext(config.CustomCSS), ".css") {
+		return errors.New("custom_css must be a CSS file")
+	}
 	return validateConfiguredPath("assets_dir", config.AssetsDir, config.OutputDir, true)
 }
 

@@ -46,3 +46,39 @@
     max-width: calc(1480px + var(--sidebar));
   }
 }
+
+/* Public navigation weight overrides for static sites. */
+:root {
+  --nav-link-weight: 400;
+  --nav-section-weight: 500;
+  --nav-action-weight: 500;
+  --nav-active-weight: 600;
+}
+
+.static-site .navigation-tree .nav-page-link,
+.static-site .navigation-tree .nav-node-link,
+.static-site .top-navigation-home,
+.static-site .top-navigation-page,
+.static-site .top-navigation-root-link {
+  font-weight: var(--nav-link-weight);
+}
+
+.static-site .nav-node > summary,
+.static-site .nav-node-label,
+.static-site .nav-section-heading .nav-label,
+.static-site .top-navigation-group > summary {
+  font-weight: var(--nav-section-weight);
+}
+
+.static-site .nav-tree-action,
+.static-site .external-link-copy strong,
+.static-site .menu-button {
+  font-weight: var(--nav-action-weight);
+}
+
+.static-site .navigation-tree .nav-page-link.active,
+.static-site .navigation-tree .nav-node-link.active,
+.static-site .top-navigation-page.active,
+.static-site .top-navigation-root-link.active {
+  font-weight: var(--nav-active-weight);
+}

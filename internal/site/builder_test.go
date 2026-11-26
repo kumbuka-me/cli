@@ -548,3 +548,42 @@ func TestDiscoverPagesRejectsSymbolicLinks(t *testing.T) {
 
 	require.ErrorContains(t, err, "symbolic links are not supported")
 }
+
+func TestBuildCustomStylesheet(t *testing.T) {
+	t.Parallel()
+	root := t.TempDir()
+	require.NoError(t, os.MkdirAll(filepath.Join(root, "content", "guide"), 0o755))
+	require.NoError(t, os.MkdirAll(filepath.Join(root, "assets", "styles"), 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(root, "content", "index.md"), []byte("# Home"), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(root, "content", "guide", "index.md"), []byte("# Guide"), 0o644))
+	css := ":root { --nav-link-weight: 500; }"
+	require.NoError(t, os.WriteFile(filepath.Join(root, "assets", "styles", "custom.css"), []byte(css), 0o644))
+	configFile := filepath.Join(root, "kumbuka-site.toml")
+	require.NoError(t, os.WriteFile(configFile, []byte(fmt.Sprintf(`source_dir = %q
+output_dir = %q
+site_url = "https://example.com/docs/"
+assets_dir = "assets"
+custom_css = "assets/styles/custom.css"
+`, filepath.Join(root, "content"), filepath.Join(root, "site"))), 0o644))
+	config, err := loadConfig(configFile, true)
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(root, "assets", "styles", "custom.css"), config.CustomCSS)
+	b := newBuilder(staticAssets)
+	b.renderer = testMarkdownRenderer(t)
+	_, err = b.build(context.Background(), config)
+	require.NoError(t, err)
+	data, err := os.ReadFile(filepath.Join(config.OutputDir, "assets", "styles", "custom.css"))
+	require.NoError(t, err)
+	assert.Equal(t, css, string(data))
+	for _, page := range []string{"index.html", "guide/index.html", "search/index.html", "404.html"} {
+		html, err := os.ReadFile(filepath.Join(config.OutputDir, page))
+		require.NoError(t, err)
+		content := string(html)
+		assert.Contains(t, content, `href="/docs/assets/styles/custom.css"`)
+		assert.Greater(t, strings.Index(content, "data-custom-styles"), strings.Index(content, "data-plugin-styles"))
+	}
+	config.CustomCSS = filepath.Join(root, "missing.css")
+	assert.ErrorContains(t, validateAssetPaths(config), "custom_css")
+	config.CustomCSS = config.OutputDir
+	assert.ErrorContains(t, validateAssetPaths(config), "custom_css")
+}

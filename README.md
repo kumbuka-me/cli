@@ -30,23 +30,16 @@ Preview a local site with automatic rebuilds and browser reloads:
 kumbuka-cli serve --config kumbuka-site.toml
 ```
 
-By default, `serve` listens on `127.0.0.1:8000`, builds the site before serving,
-and watches Markdown, configuration, assets, and the plugin dependency file for
-changes. Successful rebuilds reload connected browsers. A failed rebuild leaves
-the last successfully generated site available. The preview retains the site's
-configured URL path (such as `/docs/`) and uses the local server as its origin,
-including for browser plugins. Restart the server after changing the configured
-site URL path.
+By default, `serve` listens on `127.0.0.1:8000`, builds the site before serving, and watches Markdown, configuration, assets, and the plugin dependency file for changes.
+Successful rebuilds reload connected browsers. A failed rebuild leaves the last successfully generated site available.
+The preview retains the site's configured URL path (such as `/docs/`) and uses the local server as its origin, including for browser plugins. Restart the server after changing the configured site URL path.
 
 ```sh
 kumbuka-cli serve --listen-address 127.0.0.1:9000
 kumbuka-cli serve --no-build --no-watch
 ```
 
-`--no-build` serves existing generated files; it does not rewrite URLs or plugin
-frame policies, so use the default build-enabled mode for an accurate preview.
-The preview server is intended for local development, not production hosting.
-
+`--no-build` serves existing generated files; it does not rewrite URLs or plugin frame policies, so use the default build-enabled mode for an accurate preview. The preview server is intended for local development, not production hosting.
 Manage the project's `.kumbukaplugins` file:
 
 ```sh
@@ -66,6 +59,34 @@ kumbuka-cli mirror \
   --database-url 'postgres://USER:PASS@HOST:5432/kumbuka?sslmode=disable' \
   --output kumbuka-mirror
 ```
+
+## Custom stylesheets
+
+Static navigation defaults to regular links (400), medium sections and actions (500), and semibold active links (600). To override these or other styles, add an optional stylesheet in `kumbuka-site.toml`:
+
+```toml
+assets_dir = "assets"
+custom_css = "assets/custom.css"
+```
+
+Paths are relative to the configuration file. The stylesheet is copied into the site and loaded after built-in and plugin styles on every page, including search and 404 pages. `serve` watches it for changes. A missing file fails the build.
+
+For example, `assets/custom.css` can contain:
+
+```css
+:root {
+  --nav-link-weight: 500;
+  --nav-section-weight: 600;
+  --nav-action-weight: 600;
+  --nav-active-weight: 700;
+}
+```
+
+Links include page links in sidebar and top navigation. Sections include folder labels and the documentation label. Actions include navigation controls and header external links. Active links retain their background/color indicators.
+Custom CSS can also override colors, typography, spacing, and other selectors; these four navigation variables are the documented weight controls.
+
+Files inside `assets_dir` keep their relative paths under `assets/`; files inside `source_dir` keep their source-relative paths. Other stylesheet files are copied to `assets/<filename>`. Keep fonts and images alongside the stylesheet inside `assets_dir` (or `source_dir`) so relative CSS `url(...)` references are copied too.
+Omit `custom_css` to use the defaults.
 
 ## Development
 

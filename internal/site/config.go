@@ -25,6 +25,8 @@ type Config struct {
 	FaviconICO string `toml:"favicon_ico"`
 	// AssetsDir is an optional directory copied below the generated assets path.
 	AssetsDir string `toml:"assets_dir"`
+	// CustomCSS is an optional stylesheet loaded after built-in and plugin styles.
+	CustomCSS string `toml:"custom_css"`
 	// SiteName is the title displayed by generated pages.
 	SiteName string `toml:"site_name"`
 	// Footer is optional plain text displayed below generated pages.
@@ -126,6 +128,7 @@ func (c *Config) resolvePaths(configDir string) {
 	resolveRelativePath(configDir, &c.Favicon)
 	resolveRelativePath(configDir, &c.FaviconICO)
 	resolveRelativePath(configDir, &c.AssetsDir)
+	resolveRelativePath(configDir, &c.CustomCSS)
 	resolveRelativePath(configDir, &c.PluginsFile)
 }
 

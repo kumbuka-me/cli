@@ -72,6 +72,8 @@ type viewData struct {
 	FaviconURL string
 	// FaviconICOURL is the published legacy favicon URL.
 	FaviconICOURL string
+	// CustomCSSURL is the published custom stylesheet URL.
+	CustomCSSURL string
 	// SiteName is the configured documentation title.
 	SiteName string
 	// Footer is optional plain text displayed below generated pages.
@@ -306,6 +308,7 @@ func commonViewData(plan buildPlan, branding brandingData) viewData {
 		LogoURL:                 branding.LogoURL,
 		FaviconURL:              branding.FaviconURL,
 		FaviconICOURL:           branding.FaviconICOURL,
+		CustomCSSURL:            branding.CustomCSSURL,
 		SiteName:                plan.config.SiteName,
 		Footer:                  plan.config.Footer,
 		SiteURL:                 plan.config.SiteURL,

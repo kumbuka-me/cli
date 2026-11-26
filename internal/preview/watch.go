@@ -27,6 +27,7 @@ func WatchPaths(config site.Config, configPath string) []string {
 		config.Logo,
 		config.Favicon,
 		config.FaviconICO,
+		config.CustomCSS,
 		config.PluginsFile,
 	}
 }

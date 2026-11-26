@@ -39,6 +39,8 @@ type brandingData struct {
 	FaviconURL string
 	// FaviconICOURL is the generated public legacy favicon URL.
 	FaviconICOURL string
+	// CustomCSSURL is the published custom stylesheet URL.
+	CustomCSSURL string
 }
 
 // prepareOutput publishes runtime, source, and branding assets into an empty staged output directory.
@@ -59,6 +61,13 @@ func (b *builder) prepareOutput(ctx context.Context, config Config, basePath str
 		return brandingData{}, err
 	}
 
+	stylesheet, err := publishConfiguredFile(config, config.CustomCSS)
+	if err != nil {
+		return brandingData{}, fmt.Errorf("publish custom_css: %w", err)
+	}
+	if stylesheet != "" {
+		branding.CustomCSSURL = publicURLPath(basePath, stylesheet)
+	}
 	return branding, nil
 }
 
