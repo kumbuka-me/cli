@@ -9,8 +9,8 @@ github.com/containeroo/tinyflags v0.12.0/go.mod h1:60uDGGWAChKE4VkKGpxSaFtxoJR/t
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-quickjs/go-intl v0.9.0 h1:flAmmWD5QL4UfQ/YgeRlUV9UUEnh67ocYw4rlIEIbmo=
 github.com/go-quickjs/go-intl v0.9.0/go.mod h1:/Kn3soBxkmtIHevMspxdnTc5Br6+wHbzxM312CdeupM=
-github.com/go-quickjs/go-quickjs v0.44.0 h1:6ZdbhcKPRkwjrsPdJwt4tCxNRjOzaZq+yIIZADhPVwg=
-github.com/go-quickjs/go-quickjs v0.44.0/go.mod h1:q6Zkn+wp3IAmnsc3bekcorjXlGaR3U3ZKXtHCB6Enn0=
+github.com/go-quickjs/go-quickjs v0.45.2 h1:t1UGto3JiBcukvQZJ9A5qN4Yq0YSVmXvQtQdwmGw498=
+github.com/go-quickjs/go-quickjs v0.45.2/go.mod h1:q6Zkn+wp3IAmnsc3bekcorjXlGaR3U3ZKXtHCB6Enn0=
 github.com/gorilla/css v1.0.1 h1:ntNaBIghp6JmvWnxbZKANoLyuXTPZ4cAMlo6RyhlbO8=
 github.com/gorilla/css v1.0.1/go.mod h1:BvnYkspnSzMmwRK+b8/xgNPLiIuNZr6vbZBTPQ2A3b0=
 github.com/jackc/pgpassfile v1.0.0 h1:/6Hmqy13Ss2zCq62VdNG8tM1wchn8zjSGOBJ6icpsIM=
@@ -23,8 +23,8 @@ github.com/jackc/puddle/v2 v2.2.3 h1:f8HoREISb3l5eO9coPgK7U3hKLhWGokOFVcThl5jrao
 github.com/jackc/puddle/v2 v2.2.3/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
 github.com/kaugesaar/lucide-go v0.46.0 h1:LtbaJWi5nEid31pfPfXBr4gnB18VoTbs3Io6olnI0WA=
 github.com/kaugesaar/lucide-go v0.46.0/go.mod h1:XewB1pV8an9xmQ3+x7riCwjCtCrwfeUTaI3fiBhfjbY=
-github.com/kumbuka-me/kumbuka v0.69.0 h1:bOUj+iV9GH9xxHgXLfUBb4VwIGaZ7mnbZpYU1Bb+n9w=
-github.com/kumbuka-me/kumbuka v0.69.0/go.mod h1:RoM+AMPKS9MCcyV9bFm8dcIOXkkRl/PcH7dYhPzR9pI=
+github.com/kumbuka-me/kumbuka v0.69.1 h1:Z90vLGbAC/FQCCKAIDQazF8nlsSi/jcTfjMlTCNebJY=
+github.com/kumbuka-me/kumbuka v0.69.1/go.mod h1:HHGrA9r+uIvkSfCw81ZyTsEZNXAaDIvTL+E5FbSx+YQ=
 github.com/kumbuka-me/sdk v0.32.0 h1:F+jgWZswlt9ZI0LjvKTi2IkIZtCUm9qapqWh9lt5/Ao=
 github.com/kumbuka-me/sdk v0.32.0/go.mod h1:tWUpyhjG8ms3sOi/wN+J9zM6Hhk4txRY9uqLHaaTXaE=
 github.com/microcosm-cc/bluemonday v1.0.27 h1:MpEUotklkwCSLeH+Qdx1VJgNqLlpY2KXwXFM08ygZfk=
